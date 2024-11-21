@@ -1,0 +1,5 @@
+fastapi[standard]
+faiss-cpu
+langchain
+langchain-ollama
+pymupdf
