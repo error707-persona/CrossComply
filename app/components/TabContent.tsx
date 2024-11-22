@@ -2,7 +2,7 @@ import React from 'react'
 
 const TabContent = () => {
   return (
-    <div>TabContent</div>
+    <div className='h-full'>TabContent</div>
   )
 }
 
