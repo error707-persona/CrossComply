@@ -68,10 +68,10 @@ class LLMOrchestrator:
         """Update the prompt template."""
         self.prompt_template = new_prompt
 
-    def get_response(self, query, system=""):
+    def get_response(self, query, **kwargs):
         """Query the chain and return the response."""
         if not self.chain:
             raise ValueError("LLM system is not initialized.")
-        response = self.chain.invoke({"query": query, "system": system})
+        response = self.chain.invoke({"query": query, **kwargs})
         return response["result"]
 
