@@ -1,6 +1,10 @@
 from llm import LLMOrchestrator
 from fastapi import FastAPI, HTTPException
 from models import ModelQuery
+from faker import Faker
+
+mock = True
+fake = Faker()
 
 # Define orchestrator (before app launch)
 llm_orchestrator = LLMOrchestrator(
@@ -24,14 +28,15 @@ llm_orchestrator = LLMOrchestrator(
     {question}
 
     ### Response:
-    """,
+    """
 )
 
 # Explicitly initialize at runtime
-try:
-    llm_orchestrator.initialize()
-except Exception as e:
-    raise RuntimeError(f"Failed to initialize QA system: {e}")
+if not mock:
+    try:
+        llm_orchestrator.initialize()
+    except Exception as e:
+        raise RuntimeError(f"Failed to initialize QA system: {e}")
 
 # Initialize FastAPI app
 app = FastAPI(debug=True)
@@ -43,6 +48,9 @@ def test():
 @app.post("/ask")
 def ask_question(request: ModelQuery):
     """Endpoint to process user queries."""
+    if mock:
+        return {"query": request.query, "response": fake.text()}
+
     try:
         response = llm_orchestrator.get_response(request.query)
         return {"query": request.query, "response": response}
@@ -53,12 +61,15 @@ def ask_question(request: ModelQuery):
 @app.post("/get_json")
 def get_json(request: ModelQuery):
     """Endpoint to process user queries."""
+    if mock:
+        return {"response": fake.text()}
+
     try:
         response = llm_orchestrator.get_response(request.query, system="""
             Return the data in json format no matter what.
             If it is an error return it is `{error: {message:""}}`
         """)
-        return response
+        return {"response": response}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
