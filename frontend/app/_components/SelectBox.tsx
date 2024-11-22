@@ -7,8 +7,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-
-const SelectBox = ({ title, items }) => {
+interface SelectProps {
+    title: string;
+    items: string[];
+}
+const SelectBox = ({ title, items }: SelectProps) => {
     return (
         <Select>
             <SelectTrigger className="w-[180px]">

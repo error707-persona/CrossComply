@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HomeSidebar } from "./_components/HomeSidebar";
 import { useProduct } from "@/store/product";
 import { Button } from "@/components/ui/button";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./_components/Sidebar";
 import MainArea from "./_components/MainArea";
 
 export default function Home() {
