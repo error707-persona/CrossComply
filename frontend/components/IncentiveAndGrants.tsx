@@ -18,6 +18,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { exportIncentiveSchemes } from '@/utils/data'
+import { Input } from './ui/input'
 
 
 const IncentiveAndGrants = () => {
@@ -26,7 +27,7 @@ const IncentiveAndGrants = () => {
     const [incentiveList, setincentiveList] = useState<string[]>([]);
     console.log(incentiveList)
     return (
-        <div className='w-full overflow-auto mt-5'>
+        <div className='w-full h-full overflow-y-auto p-5'>
             <div>
                 <h1 className='font-bold'>Applicable Schemes</h1>
             </div>
@@ -81,7 +82,7 @@ const IncentiveAndGrants = () => {
                     <div className='border border-black rounded p-2 w-[500px]'>{item}</div>
                 ))}
             </div>
-
+            <Input type="text" className='w-96' placeholder="Estimate Cost After Incentives" />
             <div className='mt-10'>
                 <Button>Next</Button>
             </div>
