@@ -11,7 +11,7 @@ const productItems = [
     "Unisex - Perfume",
     "Unisex - Perfume",
     "Computer Glasses",
-    "furniture"
+    "Furniture"
 ];
 
 const countryNames = [
