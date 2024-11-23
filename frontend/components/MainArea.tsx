@@ -1,6 +1,7 @@
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CustomsAndTariffs from './CustomsAndTariffs'
+import IncentiveAndGrants from './IncentiveAndGrants'
 
 
 const MainArea = () => {
@@ -14,9 +15,8 @@ const MainArea = () => {
                     <TabsTrigger value="exports">Exports Documentation and workflow</TabsTrigger>
                 </TabsList>
                 <TabsContent value="compliance">Compliance Requirements</TabsContent>
-                <TabsContent value="incentives">Incentives and grants</TabsContent>
+                <TabsContent value="incentives"><IncentiveAndGrants/></TabsContent>
                 <TabsContent value="customs" className='w-full'>
-                    CustomsAndTariffs
                     <CustomsAndTariffs />
                 </TabsContent>
                 <TabsContent value="exports">Exports Documentation and workflow</TabsContent>

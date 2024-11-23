@@ -3,6 +3,7 @@
 import MainArea from "@/components/MainArea";
 import Sidebar from "@/components/Sidebar";
 import { useProduct } from "@/store/product";
+import Dashboard from "./dashboard/page";
 
 export default function Home() {
   const productStore = useProduct();
@@ -17,6 +18,7 @@ export default function Home() {
         </div>
         <MainArea />
       </div>
+      {/* <Dashboard/> */}
     </div>
   );
 }
