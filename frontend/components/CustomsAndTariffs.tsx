@@ -28,7 +28,7 @@ const CustomsAndTariffs = () => {
         }
 
         fetchData()
-    }, [])
+    }, [product, region])
 
     useEffect(() => {
         const fetchData = async() => {
@@ -40,12 +40,12 @@ const CustomsAndTariffs = () => {
                     },
                     body: JSON.stringify({ query: `What are potential cost savings for product ${product} and country ${region}`}),
                 }
-            ).then(res => res.json()).then(val => setPotentialCostSavings(val.data))
+            ).then(res => res.json()).then(val => setPotentialCostSavings(val.response))
             console.log("data", data)
         }
 
         fetchData()
-    }, [])
+    }, [product, region])
 
     useEffect(() => {
         const fetchData = async() => {
@@ -57,12 +57,12 @@ const CustomsAndTariffs = () => {
                     },
                     body: JSON.stringify({ query: `What are Estimated Costs for product ${product} and country ${region}`}),
                 }
-            ).then(res => res.json()).then(val => setEstimatedCosts(val.data))
+            ).then(res => res.json()).then(val => setEstimatedCosts(val.response))
             console.log("data", data)
         }
 
         fetchData()
-    }, [])
+    }, [product, region])
     return (
         <>
             <div className='flex w-[100%]'>
