@@ -1,10 +1,13 @@
+import { useProduct } from "@/store/product"
+import { useRegion } from "@/store/region"
 import { useEffect, useState } from "react"
 
 const CustomsAndTariffs = () => {
     const [dutiesTariffs, setDutiesTariffs] = useState('')
     const [potentialCostSavings, setPotentialCostSavings] = useState('')
     const [estimatedCosts, setEstimatedCosts] = useState('')
-
+    const product = useProduct((state)=>state.product)
+    const region = useRegion((state)=>state.region)
     useEffect(() => {
         const fetchData = async() => {
             const data = await fetch('http://127.0.0.1:8000/get_json',

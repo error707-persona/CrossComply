@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import SelectBox from '../_components/SelectBox'
 import {productItems, countryNames} from "../utils/data"
 import {
     Select,
@@ -9,14 +8,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useProduct } from '@/app/store/product'
-import { useRegion } from '../store/region'
+import Link from 'next/link'
+import { useProduct } from '@/store/product'
+import { useRegion } from '@/store/region'
+import { Button } from './ui/button'
+import { useRouter } from 'next/navigation'
+import Dashboard from '@/app/dashboard/page'
+
 
 const Sidebar = () => {
     const setProduct = useProduct((state)=>state.setProduct)
     const setRegion = useRegion((state)=>state.setRegion)
+    const router = useRouter();
     return (
-        <div className='p-5 gap-5 flex flex-col'>
+        <div className='p-5 gap-5 flex flex-col h-full'>
            <Select  onValueChange={(value)=>setProduct(value)}>
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select Product" />
@@ -37,6 +42,7 @@ const Sidebar = () => {
                 )}
             </SelectContent>
         </Select>
+        <Button className='mt-auto' onClick={()=> <Link href="/dashboard">Dashboard</Link>}>Dashboard</Button>
         </div>
     )
 }
