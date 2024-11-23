@@ -1,10 +1,12 @@
 from llm import LLMOrchestrator
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from models import ModelQuery
 from faker import Faker
 
 mock = True
 fake = Faker()
+
 
 # Define orchestrator (before app launch)
 llm_orchestrator = LLMOrchestrator(
@@ -41,6 +43,14 @@ if not mock:
 # Initialize FastAPI app
 app = FastAPI(debug=True)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/test")
 def test():
     return {"data": "hello-world"}
@@ -73,4 +83,3 @@ def get_json(request: ModelQuery):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
-
