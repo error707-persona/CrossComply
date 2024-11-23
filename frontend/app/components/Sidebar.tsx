@@ -1,5 +1,5 @@
 import React from 'react'
-import SelectBox from './SelectBox'
+import SelectBox from '../_components/SelectBox'
 import {productItems, countryNames} from "../utils/data"
 const Sidebar = () => {
     return (
