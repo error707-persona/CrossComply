@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from models import ModelQuery
 from faker import Faker
 
-mock = True
+mock = False
 fake = Faker()
 
 
@@ -83,3 +83,20 @@ def get_json(request: ModelQuery):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/get_compliance_data")
+def get_compliance_data(request: ModelQuery):
+    """Fetches compliance data from Ollama model"""
+    if mock:
+        return {"response": fake.text()}
+
+    try:
+        compliance_data = llm_orchestrator.get_response(request.query, system="""
+            Return the data in json format no matter what.
+            If it is an error return it is `{error: {message:""}}`
+        """)
+        return {"complianceData": compliance_data}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
