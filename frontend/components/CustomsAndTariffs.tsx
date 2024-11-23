@@ -1,22 +1,26 @@
+import { useContext, useEffect, useState } from "react"
 import { useProduct } from "@/store/product"
-import { useRegion } from "@/store/region"
-import { useEffect, useState } from "react"
+import { useRegion } from "@/store/region"; 
 
 const CustomsAndTariffs = () => {
     const [dutiesTariffs, setDutiesTariffs] = useState('')
     const [potentialCostSavings, setPotentialCostSavings] = useState('')
     const [estimatedCosts, setEstimatedCosts] = useState('')
-    const product = useProduct((state)=>state.product)
-    const region = useRegion((state)=>state.region)
+    const { region } = useRegion();
+
+    const { product } = useProduct();
+
+    console.log("Country and Product", region, product)
+
     useEffect(() => {
         const fetchData = async() => {
-            const data = await fetch('http://127.0.0.1:8000/get_json',
+            const data = await fetch('http://127.0.0.1:8000/dutiesTariffs',
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json', // Specify JSON format
                     },
-                    body: JSON.stringify({ query: `What are compliance requirements for frames`}),
+                    body: JSON.stringify({ query: `What are duties and tariffs requirements for product ${product} and country ${region}`}),
                 }
             ).then(res => res.json())
             .then(val => setDutiesTariffs(val.response))
@@ -28,7 +32,15 @@ const CustomsAndTariffs = () => {
 
     useEffect(() => {
         const fetchData = async() => {
-            const data = await fetch('http://127.0.0.1:8000/potentialCostSavings').then(res => res.json()).then(val => setPotentialCostSavings(val.data))
+            const data = await fetch('http://127.0.0.1:8000/potentialCostSavings',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Specify JSON format
+                    },
+                    body: JSON.stringify({ query: `What are potential cost savings for product ${product} and country ${region}`}),
+                }
+            ).then(res => res.json()).then(val => setPotentialCostSavings(val.data))
             console.log("data", data)
         }
 
@@ -37,7 +49,15 @@ const CustomsAndTariffs = () => {
 
     useEffect(() => {
         const fetchData = async() => {
-            const data = await fetch('http://127.0.0.1:8000/estimatedCosts').then(res => res.json()).then(val => setEstimatedCosts(val.data))
+            const data = await fetch('http://127.0.0.1:8000/estimatedCosts',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Specify JSON format
+                    },
+                    body: JSON.stringify({ query: `What are Estimated Costs for product ${product} and country ${region}`}),
+                }
+            ).then(res => res.json()).then(val => setEstimatedCosts(val.data))
             console.log("data", data)
         }
 

@@ -7,13 +7,17 @@ from faker import Faker
 mock = False
 fake = Faker()
 
-
 # Define orchestrator (before app launch)
 llm_orchestrator = LLMOrchestrator(
     file_paths=[
         "../notebooks/docs/rodtep_guidelines-output.pdf",
         "../notebooks/docs/Drawback-Rates.pdf",
         "../notebooks/docs/furniture_tv.pdf",
+        "../notebooks/docs/htsdata.pdf",
+        "../notebooks/docs/integrated-database.pdf",
+        "../notebooks/docs/Tariff3.pdf",
+        "../notebooks/docs/Tariff4.pdf",
+        "../notebooks/docs/weekly_currency_notice_11-22-2024.pdf"
     ],
     llm_model="llama3.2",
     embedding_model_path="sentence-transformers/all-mpnet-base-v2",
@@ -45,7 +49,7 @@ app = FastAPI(debug=True)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Or specify the frontend's domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,6 +58,90 @@ app.add_middleware(
 @app.get("/test")
 def test():
     return {"data": "hello-world"}
+
+@app.post("/dutiesTariffs")
+def dutiesTariffs(request: ModelQuery):
+    """Endpoint to process user queries."""
+    if mock:
+        return {"response": fake.text()}
+
+    try:
+        response = llm_orchestrator.get_response(request.query, system="""
+            ### System:
+            Return the data only in json which can be directly parsed
+
+            ### Context:
+            {context}
+
+            ### User:
+            {question}
+
+            ### Response:
+            If it is an error return it is `{error: {message:""}}`
+        """)
+        return {"response": response}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/potentialCostSavings")
+def potentialCostSavings(request: ModelQuery):
+    """Endpoint to process user queries."""
+    if mock:
+        return {"response": fake.text()}
+
+    try:
+        response = llm_orchestrator.get_response(request.query, system="""
+            ### System:
+            Return the data only in json which can be directly parsed
+
+            ### Context:
+            {context}
+
+            ### User:
+            {question}
+
+            ### Response:
+            If it is an error return it is `{error: {message:""}}`
+        """)
+        return {"response": response}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/estimatedCosts")
+def estimatedCosts(request: ModelQuery):
+    """Endpoint to process user queries."""
+    if mock:
+        return {"response": fake.text()}
+
+    try:
+        response = llm_orchestrator.get_response(request.query, system="""
+            ### System:
+            Return the data only in json which can be directly parsed
+
+            ### Context:
+            {context}
+
+            ### User:
+            {question}
+
+            ### Response:
+            If it is an error return it is `{error: {message:""}}`
+        """)
+        return {"response": response}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# @app.get("/potentialCostSavings")
+# def potentialCostSavings():
+#     return {"data": "Some potential Cost Savings stuff from api"}
+
+# @app.get("/estimatedCosts")
+# def estimatedCosts():
+#     return {"data": "Some Estimated Costs stuff from api"}
 
 @app.post("/ask")
 def ask_question(request: ModelQuery):
