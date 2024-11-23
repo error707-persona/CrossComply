@@ -1,6 +1,6 @@
 "use client";
 
-import { useProduct } from "@/store/product";
+import { useProduct } from "@/app/store/product";
 import Sidebar from "./_components/Sidebar";
 import MainArea from "./_components/MainArea";
 
@@ -12,7 +12,7 @@ export default function Home() {
         <span>CrossComply</span>
       </div>
       {/* <HomeSidebar/> */}
-      <div className="flex gap-10 h-4/5">
+      <div className="flex gap-16 h-4/5">
         <div className="w-1/5">
           <Sidebar />
         </div>
