@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table"
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { useCommonDataStore } from '@/store/CommonData'
 const applications = [
   {
     applicationId: "INV001",
@@ -57,7 +58,8 @@ const applications = [
   },
 ]
 const Dashboard = () => {
-  const router = useRouter()
+  const router = useRouter();
+  const { selectList } = useCommonDataStore();
   return (
     <div>
       <div className="p-2 flex bg-blue-600 text-white font-bold text-2xl">
@@ -109,9 +111,18 @@ const Dashboard = () => {
         ))}
       </TableBody>
     </Table>
-      </div>
-      
 
+    <h1 className='font-bold m-4'>Selected Compliance Requirements</h1>
+    <hr></hr>
+      {selectList}
+      {selectList?.length > 0 && (
+        <ul style={{ listStyleType: 'disc' }}>
+          {selectList?.map((list, index) => (
+            <li key={index}>{list}</li>
+          ))}
+        </ul>
+      )}
+      </div>
     </div>
   )
 }
