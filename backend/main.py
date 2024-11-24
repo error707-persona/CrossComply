@@ -1,3 +1,4 @@
+import json
 from llm import LLMOrchestrator
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -67,16 +68,8 @@ def dutiesTariffs(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response(request.query, system="""
-            ### System:
             Return the data only in json which can be directly parsed
 
-            ### Context:
-            {context}
-
-            ### User:
-            {question}
-
-            ### Response:
             If it is an error return it is `{error: {message:""}}`
         """)
         return {"response": response}
@@ -92,19 +85,11 @@ def potentialCostSavings(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response(request.query, system="""
-            ### System:
             Return the data only in json which can be directly parsed
 
-            ### Context:
-            {context}
-
-            ### User:
-            {question}
-
-            ### Response:
             If it is an error return it is `{error: {message:""}}`
         """)
-        return {"response": response}
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -117,19 +102,11 @@ def estimatedCosts(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response(request.query, system="""
-            ### System:
             Return the data only in json which can be directly parsed
 
-            ### Context:
-            {context}
-
-            ### User:
-            {question}
-
-            ### Response:
             If it is an error return it is `{error: {message:""}}`
         """)
-        return {"response": response}
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -164,10 +141,13 @@ def get_json(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what.
+            Return the data in json format no matter what to be directly parsed.
+
             If it is an error return it is `{error: {message:""}}`
         """)
-        return {"response": response}
+
+        parsed_response = json.loads(response)
+        return {"response": parsed_response}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -180,10 +160,13 @@ def get_compliance_data(request: ModelQuery):
 
     try:
         compliance_data = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what.
+            Return the data in json format no matter what to be directly parsed.
+
             If it is an error return it is `{error: {message:""}}`
         """)
-        return {"complianceData": compliance_data}
+
+        parsed_compliance_data = json.loads(compliance_data)
+        return {"complianceData": parsed_compliance_data}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
