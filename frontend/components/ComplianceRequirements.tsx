@@ -18,6 +18,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import { useResponse } from '@/store/response';
 
 const FormSchema = z.object({
     items: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -36,7 +37,7 @@ export default function ComplianceRequirements() {
         const { region } = useRegion();
 
         const { product } = useProduct();
-        const {compliance} = use
+        const {compliance} = useResponse();
     function onSubmit(data: z.infer<typeof FormSchema>) {
         toast({
             title: "You submitted the following values:",
@@ -94,7 +95,7 @@ function structureComplianceData(responseText) {
     if (currentSection) {
         structuredData.push(currentSection);
     }
-
+    console.log(structuredData)
     return structuredData;
 }
 

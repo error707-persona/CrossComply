@@ -9,7 +9,6 @@ const productItems = [
     "Soaps",
     "Men - Perfume",
     "Unisex - Perfume",
-    "Unisex - Perfume",
     "Computer Glasses",
     "Furniture"
 ];
