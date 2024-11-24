@@ -170,3 +170,23 @@ def get_compliance_data(request: ModelQuery):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/get_incentives_data")
+def get_incentives_data(request: ModelQuery):
+    """Fetches incentives data from Ollama model"""
+    if mock:
+        return {"response": fake.text()}
+
+    try:
+        incentives_data = llm_orchestrator.get_response(request.query, system="""
+            Return the data in json format no matter what to be directly parsed.
+
+            If it is an error return it is `{error: {message:""}}`
+        """)
+
+        # parsed_incentives_data = json.loads(incentives_data)
+        return {"detail": incentives_data}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
