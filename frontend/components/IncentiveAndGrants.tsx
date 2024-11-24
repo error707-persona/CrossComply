@@ -28,31 +28,24 @@ const IncentiveAndGrants = () => {
     const [value, setValue] = React.useState("")
     const [incentiveList, setincentiveList] = useState<string[]>([]);
     const [incentivesData, setIncentivesData] = useState<any[]>([]);
-    useEffect(() => {
-        const fetchIncentivesData = async () => {
-            const { region } = useRegion();
-            const { product } = useProduct();
-            try {
-                const response = await fetch('http://127.0.0.1:8000/get_incentives_data',{
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body:JSON.stringify({ query:`Give me list of all incentives and grants schemes granted by government applicable for ${product} and in this ${region}` }),
-                });
-                const data = await response.json();
-                // Structuring the response
-                // const structuredComplianceData = structureComplianceData(data.complianceData);
-                // Log the structured data to see the result
-                console.log("Compliance Data:", data);
-                setIncentivesData(data);
-            }catch (error) {
-                console.error("Error fetching compliance data:", error);
-            }
-        }
-
-        fetchIncentivesData()
-    }, []);
+    // useEffect(() => {
+    //     const fetchIncentivesData = async () => {
+    //         try {
+    //             const response = await fetch('http://127.0.0.1:8000/get_incentives_data',{
+    //                 method:"POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body:JSON.stringify({ query:`Give me list of all incentives and grants schemes granted by government applicable for ${product} and in this ${region}` }),
+    //             });
+    //             const data = await response.json();
+    //             setIncentivesData(data);
+    //         } catch (error) {
+    //             console.error("Error fetching compliance data:", error);
+    //         }
+    //     }
+    //     fetchIncentivesData()
+    // }, []);
     return (
         <div className='w-full h-full overflow-y-auto p-5'>
             <div>

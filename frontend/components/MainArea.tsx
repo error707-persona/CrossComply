@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CustomsAndTariffs from './CustomsAndTariffs'
 import IncentiveAndGrants from './IncentiveAndGrants'
 import ComplianceRequirements from './ComplianceRequirements'
+import ExportDocumentation from './ExportDocumentation'
 
 
 const MainArea = () => {
@@ -22,7 +23,10 @@ const MainArea = () => {
                 <TabsContent value="customs" className='w-full'>
                     <CustomsAndTariffs />
                 </TabsContent>
-                <TabsContent value="exports">Exports Documentation and workflow</TabsContent>
+                <TabsContent value="incentives"><IncentiveAndGrants/></TabsContent>
+                <TabsContent value="exports">Exports Documentation and workflow
+                    <ExportDocumentation />
+                </TabsContent>
             </Tabs>
 
         </div>
