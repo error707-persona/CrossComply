@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { useProduct } from "@/store/product"
 import { useRegion } from "@/store/region"; 
+import { Spinner } from "./ui/spinner";
 
 const CustomsAndTariffs = () => {
     const [dutiesTariffs, setDutiesTariffs] = useState('')
@@ -69,21 +70,21 @@ const CustomsAndTariffs = () => {
                 <div className='flex flex-col border-2 m-4'>
                     <h1 className="p-2 font-bold">Breaked Down estimated customs duties and tariffs</h1>
                     <div>
-                        {dutiesTariffs}
+                        {(dutiesTariffs!=='')?dutiesTariffs:<Spinner/>}
                     </div>
                 </div>
 
                 <div className='flex flex-col border-2 m-4'>
                     <h1 className="p-2 font-bold">Suggested Potential Cost Saving Measures</h1>
                     <div>
-                        {potentialCostSavings}
+                        {(potentialCostSavings!=='')?potentialCostSavings:<Spinner/>}
                     </div>
                 </div>
 
                 <div className='flex flex-col border-2 m-4'>
                     <h1 className="p-2 font-bold">Estimated Costs</h1>
                     <div>
-                        {estimatedCosts}
+                        {(estimatedCosts)?estimatedCosts:<Spinner/>}
                     </div>
                 </div>
             </div>

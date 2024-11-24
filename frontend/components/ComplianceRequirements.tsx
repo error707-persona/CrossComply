@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { useProduct } from "@/store/product"
 import { useRegion } from "@/store/region";
-
+import { Spinner } from '@/components/ui/spinner';
 import {
     Form,
     FormControl,
@@ -19,6 +19,8 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { useResponse } from '@/store/response';
+import { doc, setDoc } from "firebase/firestore";
+import {db} from "../firebase" 
 
 const FormSchema = z.object({
     items: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -27,6 +29,8 @@ const FormSchema = z.object({
 })
 
 export default function ComplianceRequirements() {
+    const [selectList, setselectList] = useState<string[]>([]);
+    console.log(selectList, "selected items");
     const form = useForm<z.infer<typeof FormSchema>>({
             resolver: zodResolver(FormSchema),
             defaultValues: {
@@ -35,10 +39,16 @@ export default function ComplianceRequirements() {
         })
 
         const { region } = useRegion();
-
         const { product } = useProduct();
         const {compliance} = useResponse();
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+        
+    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+        console.log(data, "complaince data")
+        await setDoc(doc(db, "cities", "LA"), {
+            name: "Los Angeles",
+            state: "CA",
+            country: "USA"
+          });
         toast({
             title: "You submitted the following values:",
             description: (
@@ -55,6 +65,7 @@ function structureComplianceData(responseText) {
     let structuredData = [];
     let currentSection = null;
     let currentItem = null;
+    
 
     // Loop through each line of the response text
     lines.forEach((line) => {
@@ -165,7 +176,9 @@ function structureComplianceData(responseText) {
                                                                 checked={value.includes(item.label)} // Check if item is in the value array
                                                                 onCheckedChange={(checked) => {
                                                                     // Update field value based on checkbox status
+                                                                    
                                                                     if (checked) {
+                                                                        setselectList((prev)=>[...prev, item.label])
                                                                         field.onChange([...value, item.label]);
                                                                     } else {
                                                                         field.onChange(value.filter((val) => val !== item.label));
@@ -219,7 +232,8 @@ function structureComplianceData(responseText) {
                             </div>
                         ))
                     ) : (
-                        <p>Loading compliance requirements...</p>
+                        <Spinner><p>Loading compliance requirements...</p></Spinner>
+                        
                     )}
                     <FormMessage />
                 </FormItem>
