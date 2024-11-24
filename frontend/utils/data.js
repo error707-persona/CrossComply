@@ -9,6 +9,7 @@ const productItems = [
     "Soaps",
     "Men - Perfume",
     "Unisex - Perfume",
+    "Women - Perfume",
     "Computer Glasses",
     "Furniture"
 ];

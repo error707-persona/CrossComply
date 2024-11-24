@@ -135,7 +135,7 @@ function structureComplianceData(responseText) {
         }
 
         fetchComplianceData()
-    }, []);
+    }, [product, region]);
 
     return(
         <>
