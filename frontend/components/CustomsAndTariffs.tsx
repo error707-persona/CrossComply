@@ -56,7 +56,7 @@ const CustomsAndTariffs = () => {
                     headers: {
                         'Content-Type': 'application/json', // Specify JSON format
                     },
-                    body: JSON.stringify({ query: `What are Estimated Costs for product ${product} and country ${region}`}),
+                    body: JSON.stringify({ query: `What are rates for product ${product} and country ${region}`}),
                 }
             ).then(res => res.json()).then(val => setEstimatedCosts(val.response))
             console.log("data", data)
