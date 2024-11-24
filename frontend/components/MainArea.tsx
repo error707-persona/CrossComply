@@ -23,7 +23,6 @@ const MainArea = () => {
                 <TabsContent value="customs" className='w-full'>
                     <CustomsAndTariffs />
                 </TabsContent>
-                <TabsContent value="incentives"><IncentiveAndGrants/></TabsContent>
                 <TabsContent value="exports">Exports Documentation and workflow
                     <ExportDocumentation />
                 </TabsContent>

@@ -2,12 +2,9 @@
 
 import MainArea from "@/components/MainArea";
 import Sidebar from "@/components/Sidebar";
-import { useProduct } from "@/store/product";
-import Dashboard from "./dashboard/page";
 import { CircleUserRound } from "lucide-react";
 
 export default function Home() {
-  const productStore = useProduct();
   return (
     <div className="h-screen flex flex-col">
       <div className="p-2 flex bg-blue-600 text-white font-bold text-2xl">

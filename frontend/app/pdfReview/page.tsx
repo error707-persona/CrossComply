@@ -5,7 +5,6 @@
  */
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronDownIcon, ChevronUpIcon, FileIcon } from "lucide-react"
 
 export default function PdfReview() {
   return (
