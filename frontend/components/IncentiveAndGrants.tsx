@@ -36,7 +36,7 @@ const IncentiveAndGrants = () => {
     useEffect(() => {
         const fetchIncentivesData = async () => {
             try {
-                if (product !== undefined && region !== undefined) {
+               
                 const response = await fetch('http://127.0.0.1:8000/get_incentives_data', {
                     method: "POST",
                     headers: {
@@ -50,13 +50,13 @@ const IncentiveAndGrants = () => {
                     console.log(displayData);
                 }
                 setIncentivesData(data);
-            }
+            
             } catch (error) {
             console.error("Error fetching incetives data:", error);
         }
     }
         fetchIncentivesData()
-    }, []);
+    }, [product, region]);
 return (
     <div className='w-full h-full overflow-y-auto p-5'>
         <div>
