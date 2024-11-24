@@ -15,10 +15,11 @@ llm_orchestrator = LLMOrchestrator(
         "../notebooks/docs/Drawback-Rates.pdf",
         "../notebooks/docs/furniture_tv.pdf",
         "../notebooks/docs/htsdata.pdf",
-        "../notebooks/docs/integrated-database.pdf",
         "../notebooks/docs/Tariff3.pdf",
         "../notebooks/docs/Tariff4.pdf",
-        "../notebooks/docs/weekly_currency_notice_11-22-2024.pdf"
+        "../notebooks/docs/weekly_currency_notice_11-22-2024.pdf",
+        "../notebooks/docs/Tariff1.pdf",
+        "../notebooks/docs/CustomsAndTariffs.pdf"
     ],
     llm_model="llama3.2",
     embedding_model_path="sentence-transformers/all-mpnet-base-v2",
@@ -86,10 +87,14 @@ def potentialCostSavings(request: ModelQuery):
     try:
         response = llm_orchestrator.get_response(request.query, system="""
             Return the data only in json which can be directly parsed
+            Respond strictly in JSON format. The response must be an array of objects. Each object must match one of these formats:
+
+            1. Success: `[{"costs": "value"}]`
+            2. Error: `[{"error": {"message": "value"}}]`
 
             If it is an error return it is `{error: {message:""}}`
         """)
-        return {"response": json.loads(response)}
+        return {"response": response}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -106,7 +111,7 @@ def estimatedCosts(request: ModelQuery):
 
             If it is an error return it is `{error: {message:""}}`
         """)
-        return {"response": json.loads(response)}
+        return {"response": response}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -146,8 +151,8 @@ def get_json(request: ModelQuery):
             If it is an error return it is `{error: {message:""}}`
         """)
 
-        parsed_response = json.loads(response)
-        return {"response": parsed_response}
+        # parsed_response = json.loads(response)
+        return {"response": response}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -165,8 +170,8 @@ def get_compliance_data(request: ModelQuery):
             If it is an error return it is `{error: {message:""}}`
         """)
 
-        parsed_compliance_data = json.loads(compliance_data)
-        return {"complianceData": parsed_compliance_data}
+        # parsed_compliance_data = json.loads(compliance_data)
+        return {"complianceData": compliance_data}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
