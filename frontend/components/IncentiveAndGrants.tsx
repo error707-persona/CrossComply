@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { Check, ChevronsUpDown } from "lucide-react"
 
@@ -19,17 +19,47 @@ import {
 } from "@/components/ui/popover"
 import { exportIncentiveSchemes } from '@/utils/data'
 import { Input } from './ui/input'
+import { useRegion } from '@/store/region'
+import { useProduct } from '@/store/product'
 
 
 const IncentiveAndGrants = () => {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
     const [incentiveList, setincentiveList] = useState<string[]>([]);
-    console.log(incentiveList)
+    const [incentivesData, setIncentivesData] = useState<any[]>([]);
+    useEffect(() => {
+        const fetchIncentivesData = async () => {
+            const { region } = useRegion();
+            const { product } = useProduct();
+            try {
+                const response = await fetch('http://127.0.0.1:8000/get_incentives_data',{
+                    method:"POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body:JSON.stringify({ query:`Give me list of all incentives and grants schemes granted by government applicable for ${product} and in this ${region}` }),
+                });
+                const data = await response.json();
+                // Structuring the response
+                // const structuredComplianceData = structureComplianceData(data.complianceData);
+                // Log the structured data to see the result
+                console.log("Compliance Data:", data);
+                setIncentivesData(data);
+            }catch (error) {
+                console.error("Error fetching compliance data:", error);
+            }
+        }
+
+        fetchIncentivesData()
+    }, []);
     return (
         <div className='w-full h-full overflow-y-auto p-5'>
             <div>
                 <h1 className='font-bold'>Applicable Schemes</h1>
+            </div>
+            <div>
+                {incentivesData}
             </div>
             <h1 className='font-bold my-5'>Cost Estimation After Incentives</h1>
             <Popover open={open} onOpenChange={setOpen}>
@@ -77,12 +107,12 @@ const IncentiveAndGrants = () => {
                 </PopoverContent>
             </Popover>
            
-            <div className='flex flex-col gap-5 my-5'>
+            <div className='flex flex-col gap-5 mt-5'>
                 {incentiveList.map((item) => (
                     <div className='border border-black rounded p-2 w-[500px]'>{item}</div>
                 ))}
             </div>
-            <Input type="text" className='w-96' placeholder="Estimate Cost After Incentives" />
+            <Input type="text" className='w-96 mt-5' placeholder="Estimate Cost After Incentives" />
             <div className='mt-10'>
                 <Button>Next</Button>
             </div>

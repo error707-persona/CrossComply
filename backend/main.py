@@ -187,4 +187,3 @@ def get_compliance_data(request: ModelQuery):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
-
