@@ -123,7 +123,7 @@ return (
             ))}
         </div>
         <Input type="number" onChange={(e)=>setCurValue(e.target.value)} className='w-96 mt-5' placeholder="Product Value" />
-        <Input type="text" className='w-96 mt-5' disabled placeholder="Estimate Cost After Incentives" />
+        <Input type="text" className='w-96 mt-5' disabled placeholder={(curValue>0)?"Calculating cost...":"Enter and click submit to start calculating.."} />
         <div className='mt-10 flex flex-col gap-5 w-28'>
             <Button onClick={()=>setProductValue(curValue)}>Calculate Cost</Button>
             <Button>Next</Button>
