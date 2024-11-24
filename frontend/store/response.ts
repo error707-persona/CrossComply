@@ -12,7 +12,7 @@ export type ResponseStore = {
     removeIncentives : () => void;
 };
 
-export const useRegion = create<ResponseStore>()((set) => ({
+export const useResponse = create<ResponseStore>()((set) => ({
     compliance: undefined,
     customs:undefined,
     incentives:undefined,

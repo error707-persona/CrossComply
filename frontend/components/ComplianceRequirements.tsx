@@ -36,7 +36,7 @@ export default function ComplianceRequirements() {
         const { region } = useRegion();
 
         const { product } = useProduct();
-
+        const {compliance} = use
     function onSubmit(data: z.infer<typeof FormSchema>) {
         toast({
             title: "You submitted the following values:",
