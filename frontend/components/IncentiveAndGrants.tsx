@@ -28,6 +28,8 @@ const IncentiveAndGrants = () => {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
     const [incentiveList, setincentiveList] = useState<string[]>([]);
+    const [productValue, setProductValue] = useState<Number>(0);
+    const [curValue, setCurValue] = useState<any>(0);
     const [incentivesData, setIncentivesData] = useState<any[]>([]);
     const product = useProduct((state) => state.product)
     const region = useRegion((state) => state.region)
@@ -42,7 +44,7 @@ const IncentiveAndGrants = () => {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ query: `Give me list of all incentives and grants schemes granted by government applicable for ${product} and in this ${region}` }),
+                    body: JSON.stringify({ query: `Give me list of all incentives and grants schemes granted by government applicable for ${product} and in this ${region} and write #Cost: followed by the final cost after applying for these schemes that I'm passing in Array with product value ${productValue}` }),
                 });
                 const data = await response.json();
                 if (data) {
@@ -63,7 +65,7 @@ return (
             <h1 className='font-bold'>Applicable Schemes</h1>
         </div>
         <div>
-            {(incentivesData.length === 0) ? <Spinner /> : incentivesData.filter((item) => item.trim() !== "").map((item) => (
+            {(incentivesData.length === 0) ? <Spinner /> : incentivesData.map((item:string) => item.trim()).filter((item) => item.trim() !== "").map((item) => (
                 <div>
                     {item}
                 </div>
@@ -120,9 +122,10 @@ return (
                 <div className='border border-black rounded p-2 w-[500px]'>{item}</div>
             ))}
         </div>
-        <Input type="text" className='w-96 mt-5' placeholder="Product Value" />
-        <Input type="text" className='w-96 mt-5' placeholder="Estimate Cost After Incentives" />
-        <div className='mt-10'>
+        <Input type="number" onChange={(e)=>setCurValue(e.target.value)} className='w-96 mt-5' placeholder="Product Value" />
+        <Input type="text" className='w-96 mt-5' disabled placeholder="Estimate Cost After Incentives" />
+        <div className='mt-10 flex flex-col gap-5 w-28'>
+            <Button onClick={()=>setProductValue(curValue)}>Calculate Cost</Button>
             <Button>Next</Button>
         </div>
     </div>

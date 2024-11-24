@@ -7,7 +7,7 @@ import {
 
 export default function ExportDocumentation() {
     return (
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="w-full pr-10">
             <AccordionItem value="item-1">
                 <AccordionTrigger>Proforma Invoice</AccordionTrigger>
                 <AccordionContent>
