@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form"
 import { useResponse } from '@/store/response';
 import { doc, setDoc } from "firebase/firestore";
-import {db} from "../firebase" 
+import {db} from "../firebase"
 import { useCommonDataStore } from "@/store/CommonData";
 
 const FormSchema = z.object({
@@ -32,9 +32,9 @@ const FormSchema = z.object({
 export default function ComplianceRequirements() {
     // const [selectList, setselectList] = useState<string[]>([]);
     // console.log(selectList, "selected items");
-    const [checkedItems, setCheckedItems] = useState<string[]>([]);
+    const [checkedItems, setCheckedItems] = useState([]);
     const {complianceData, selectList, setSelectList, setComplianceData} = useCommonDataStore();
-  
+
     const form = useForm<z.infer<typeof FormSchema>>({
             resolver: zodResolver(FormSchema),
             defaultValues: {
@@ -45,7 +45,7 @@ export default function ComplianceRequirements() {
         const { region } = useRegion();
         const { product } = useProduct();
         const {compliance} = useResponse();
-        
+
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         console.log(data, "complaince data")
         await setDoc(doc(db, "cities", "LA"), {
@@ -78,7 +78,7 @@ function structureComplianceData(responseText:string) {
     let structuredData:currentSectionType[] = [];
     let currentSection:currentSectionType|null=null;
     let currentItem:currentItemType|null=null;
-    
+
 
     // Loop through each line of the response text
     lines.forEach((line) => {
@@ -114,8 +114,8 @@ function structureComplianceData(responseText:string) {
 
     // Add the last section/item to the structured data
     if (currentItem && currentSection) {
-        // @ts-expect-error
-        currentSection.items.push(currentItem);   
+         // @ts-expect-error
+        currentSection.items.push(currentItem);
     }
     if (currentSection) {
         structuredData.push(currentSection);
@@ -167,7 +167,7 @@ function structureComplianceData(responseText:string) {
                         </FormDescription>
                     </div>
                     {complianceData?.length > 0 ? (
-                        complianceData.map((section:any) => (
+                        complianceData.map((section) => (
                             <div key={section.id} className="space-y-4">
                                 {/* Section Header */}
                                 <h3 className="text-lg font-semibold">{section.label}</h3>
@@ -180,10 +180,9 @@ function structureComplianceData(responseText:string) {
                                         // @ts-expect-error
                                         name={`items.${section.id}.${item.label}`}
                                         render={({ field }) => {
-                                            const value : any = field.value || []; // Ensure field.value is an array
+                                            const value:any = field.value || []; // Ensure field.value is an array
 
                                             return (
-                                                
                                                 <div key={item.label} className="space-y-2">
                                                     {/* Item Checkbox */}
                                                     <FormItem className="flex items-start space-x-3">
@@ -192,8 +191,9 @@ function structureComplianceData(responseText:string) {
                                                                 checked={value.includes(item.label)} // Check if item is in the value array
                                                                 onCheckedChange={(checked) => {
                                                                     // Update field value based on checkbox status
-                                                                    
+
                                                                     if (checked) {
+                                                                        // @ts-expect-error
                                                                         setCheckedItems((prev)=>[...prev, item.label])
                                                                         field.onChange([...value, item.label]);
                                                                     } else {
@@ -224,7 +224,7 @@ function structureComplianceData(responseText:string) {
                                                                                             checked={subValue.includes(option)} // Dynamically check if option is selected
                                                                                             onCheckedChange={(checked) => {
                                                                                                 let updatedSubValue;
-                                                                                                
+
                                                                                                 if (checked) {
                                                                                                     // Add the option to the subValue array
                                                                                                     updatedSubValue = [...subValue, option];
@@ -268,7 +268,7 @@ function structureComplianceData(responseText:string) {
                         ))
                     ) : (
                         <Spinner><p>Loading compliance requirements...</p></Spinner>
-                        
+
                     )}
                     <FormMessage />
                 </FormItem>
