@@ -13,6 +13,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { useCommonDataStore } from '@/store/CommonData'
+import { addDoc, collection, doc, onSnapshot, setDoc } from "firebase/firestore";
+import {db} from "../../firebase"
+import { useRegion } from '@/store/region'
+import { useProduct } from '@/store/product'
 const applications = [
   {
     applicationId: "INV001",
@@ -57,18 +61,40 @@ const applications = [
     product: "Skin Care",
   },
 ]
+
 const Dashboard = () => {
   const router = useRouter();
   const { selectList } = useCommonDataStore();
+  const { region } = useRegion();
+  const { product } = useProduct();
+  const { complianceData } = useCommonDataStore();
+  const handleSubmit = async () => {
+    // const result = await addDoc(collection(db, "applications"), {
+    //   compliance: complianceData,
+    //   cost: "18000",
+    //   incentives: [],
+    //   product:"Shoes",
+    //   region:"India"
+    // });
+    // console.log(result)
+   
+  }
+  const unsub = onSnapshot(collection(db, "applications"), (snapshot) => {
+    snapshot.forEach((doc) => {
+      const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+      console.log(source, " data: ", doc.data());
+    });
+  });
   return (
     <div>
-      <div className="p-2 flex bg-blue-600 text-white font-bold text-2xl">
+      <div className="p-2 flex fixed bg-blue-600 text-white font-bold text-2xl">
         <span>CrossComply</span>
         <div className="mr-5 ml-auto">
           <CircleUserRound />
         </div>
       </div>
       <div className='flex flex-col mt-2 px-24'>
+        <Button onClick={handleSubmit}>submit</Button>
         <Button className='w-6 border-none bg-transparent hover:bg-transparent' onClick={()=>router.push('/')}><MoveLeft className='text-black'/></Button>
         <div className="grid grid-cols-4 gap-6">
           <div className="rounded-lg p-4 text-center">

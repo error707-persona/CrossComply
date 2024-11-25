@@ -38,7 +38,7 @@ const IncentiveAndGrants = () => {
     useEffect(() => {
         const fetchIncentivesData = async () => {
             try {
-               
+
                 const response = await fetch('http://127.0.0.1:8000/get_incentives_data', {
                     method: "POST",
                     headers: {
@@ -48,88 +48,96 @@ const IncentiveAndGrants = () => {
                 });
                 const data = await response.json();
                 if (data) {
-                    let displayData = data.detail.split("\n").splice(3);
+                    let displayData = data.detail.split("\n").filter((item:string) => item.trim() !== "").splice(3);
                     console.log(displayData);
                 }
                 setIncentivesData(data);
-            
+
             } catch (error) {
-            console.error("Error fetching incetives data:", error);
+                console.error("Error fetching incetives data:", error);
+            }
         }
-    }
         fetchIncentivesData()
     }, [product, region]);
-return (
-    <div className='w-full h-full overflow-y-auto p-5'>
-        <div>
-            <h1 className='font-bold'>Applicable Schemes</h1>
-        </div>
-        <div>
-            {(incentivesData.length === 0) ? <Spinner /> : incentivesData.map((item:string) => item.trim()).filter((item) => item.trim() !== "").map((item) => (
-                <div>
-                    {item}
-                </div>
-            ))}
-        </div>
-        <h1 className='font-bold my-5'>Cost Estimation After Incentives</h1>
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-[500px] justify-between"
-                >
-                    {value
-                        ? exportIncentiveSchemes.find((item) => item === value)
-                        : "Select Scheme..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[500px] p-0">
-                <Command>
-                    <CommandInput placeholder="Search Scheme..." className='w-full' />
-                    <CommandList>
-                        <CommandEmpty>No Scheme found.</CommandEmpty>
-                        <CommandGroup>
-                            {exportIncentiveSchemes.map((item) => (
-                                <CommandItem
-                                    key={item}
-                                    value={item}
-                                    onSelect={(currentValue) => {
-                                        setValue(currentValue === value ? "" : currentValue)
-                                        setOpen(false)
-                                        setincentiveList((prevValues) => [...prevValues, item])
-                                    }}
-                                >
-                                    <Check
-                                        className={cn(
-                                            "mr-2 h-4 w-4",
-                                            value === item ? "opacity-100" : "opacity-0"
-                                        )}
-                                    />
-                                    {item}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
+    return (
+        <div className='w-full h-full overflow- p-5'>
+            <div>
+                <h1 className='font-bold'>Applicable Schemes</h1>
+            </div>
+            <div>
+            {/* {['', '1. RoDTEP Scheme (Reduced Distribution and Transportation Incentive Policy)', '\t* Eligible products: Various agricultural product…broad beans, horse beans, guar seeds, and others.', '\t* Incentives:', '\t\t+ 0.8 cents/kg for lentil seeds', '\t\t+ 1.5 cents/kg for dried lentils, shelled', '\t\t+ 1.2 cents/kg for dried leguminous vegetables n…i, shelled (if entered during May 1 to August 31)', '\t\t+ 0.15 cents/kg for seeds of broad beans and horse beans', '\t* #Cost: Array with product value 0', '', '2. Free Incentives:', '\t* No cost associated with these incentives.', '', '3. Other Schemes:', '\t* No specific information is available about other schemes in the provided context.', '', "Please note that the RoDTEP Scheme's overall budge…sary calibrations and revisions made as required.", '', "To provide a more accurate response, I would need …ovide more details, I'd be happy to help further."].filter((item) => item.trim() !== "").map((item) => (
+                    <div>
+                        {item}
+                    </div>
+                ))} */}
+                {(incentivesData.length === 0) ? <Spinner /> : incentivesData.filter((item) => item.trim() !== "").map((item) => (
+                    <div>
+                        { item.replace(/[^a-zA-Z0-9 ]/g, "")}
+                    </div>
+                ))}
+            </div>
+            <h1 className='font-bold my-5'>Cost Estimation After Incentives</h1>
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-[500px] justify-between"
+                    >
+                        {value
+                            ? exportIncentiveSchemes.find((item) => item === value)
+                            : "Select Schemes you want to apply..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[500px] p-0">
+                    <Command>
+                        <CommandInput placeholder="Search Scheme..." className='w-full' />
+                        <CommandList>
+                            <CommandEmpty>No Scheme found.</CommandEmpty>
+                            <CommandGroup>
+                                {exportIncentiveSchemes.map((item) => (
+                                    <CommandItem
+                                        key={item}
+                                        value={item}
+                                        onSelect={(currentValue) => {
+                                            setValue(currentValue === value ? "" : currentValue)
+                                            setOpen(false)
+                                            setincentiveList((prevValues) => [...prevValues, item])
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                value === item ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                        {item}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
 
-        <div className='flex flex-col gap-5 mt-5'>
-            {incentiveList.map((item) => (
-                <div className='border border-black rounded p-2 w-[500px]'>{item}</div>
-            ))}
+            <div className='flex flex-col gap-5 mt-5'>
+                {incentiveList.map((item) => (
+                    <div className='border border-black rounded p-2 w-[500px]'>{item}</div>
+                ))}
+            </div>
+            <div className='flex items-center justify-center w-fit'>
+                <Input type="number" onChange={(e) => setCurValue(e.target.value)} className='w-96 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' placeholder="Product Value" /> <Button className="ml-5" onClick={() => setProductValue(curValue)}>Calculate Cost</Button>
+            </div>
+
+            <Input type="text" className='w-96 mt-5' disabled placeholder={(curValue > 0) ? "Calculating cost..." : "Enter and click submit to start calculating.."} />
+            <div className='mt-10 flex flex-col gap-5 w-28'>
+
+                <Button>Next</Button>
+            </div>
         </div>
-        <Input type="number" onChange={(e)=>setCurValue(e.target.value)} className='w-96 mt-5' placeholder="Product Value" />
-        <Input type="text" className='w-96 mt-5' disabled placeholder={(curValue>0)?"Calculating cost...":"Enter and click submit to start calculating.."} />
-        <div className='mt-10 flex flex-col gap-5 w-28'>
-            <Button onClick={()=>setProductValue(curValue)}>Calculate Cost</Button>
-            <Button>Next</Button>
-        </div>
-    </div>
-)
+    )
 }
 
 export default IncentiveAndGrants

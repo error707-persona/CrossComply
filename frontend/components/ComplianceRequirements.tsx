@@ -19,7 +19,7 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { useResponse } from '@/store/response';
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import {db} from "../firebase"
 import { useCommonDataStore } from "@/store/CommonData";
 
@@ -48,11 +48,6 @@ export default function ComplianceRequirements() {
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         console.log(data, "complaince data")
-        await setDoc(doc(db, "cities", "LA"), {
-            name: "Los Angeles",
-            state: "CA",
-            country: "USA"
-          });
         toast({
             title: "You submitted the following values:",
             description: (
@@ -65,6 +60,7 @@ export default function ComplianceRequirements() {
 
     // Function to structure the response data
 function structureComplianceData(responseText:string) {
+    console.log(responseText)
     type currentSectionType = {
         id: string,
         label: string,

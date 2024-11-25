@@ -7,11 +7,13 @@ export type CommonDataStore = {
   estimatedCosts: string | null;
   complianceData: any[];
   selectList: string[];
+  incentives: {incentiveList:string[]|[], cost:string|undefined}
   setDutiesTariffs: (data: string) => void;
   setComplianceData: (data: any[]) => void;
   setPotentialCostSavings: (data: string) => void;
   setEstimatedCosts: (data: string) => void;
   setSelectList: (data: string[]) => void;
+  setIncentives: (incentiveList:string[]|[], cost:string|undefined) => void;
 };
 
 // Create the Zustand store
@@ -21,6 +23,7 @@ export const useCommonDataStore = create<CommonDataStore>()((set) => ({
   estimatedCosts: null,
   complianceData: [],
   selectList: [],
+  incentives:{incentiveList:[], cost:undefined},
 
   // Setters for each field
   setDutiesTariffs: (data) => set({ dutiesTariffs: data }),
@@ -28,4 +31,5 @@ export const useCommonDataStore = create<CommonDataStore>()((set) => ({
   setPotentialCostSavings: (data) => set({ potentialCostSavings: data }),
   setEstimatedCosts: (data) => set({ estimatedCosts: data }),
   setSelectList: (data) => set({ selectList: data}),
+  setIncentives: (incentiveList:string[]|[], cost:string|undefined) => set({incentives:{incentiveList, cost}})
 }));
