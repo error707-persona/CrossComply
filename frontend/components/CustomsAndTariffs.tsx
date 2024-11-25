@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useProduct } from "@/store/product";
-import { useRegion } from "@/store/region"; 
+import { useRegion } from "@/store/region";
 import { Spinner } from "./ui/spinner";
 import { useCommonDataStore } from "@/store/CommonData";
 import {
@@ -37,7 +37,7 @@ const CustomsAndTariffs = () => {
             // <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div>
               {dutiesTariffs.map((item) => (
-                <Card key={item.hts8} className="hover:shadow-lg transition">
+                <Card key={item.hts8} className="m-2 hover:shadow-lg transition">
                   <CardHeader>
                     <CardTitle>{item.hts8}</CardTitle>
                     <CardDescription>{item.description}</CardDescription>
@@ -75,7 +75,7 @@ const CustomsAndTariffs = () => {
             ? (
                 <div className="">
                 {potentialCostSavings?.map((item) => (
-                    <div className="p-4 border rounded-md shadow-sm hover:shadow-lg transition">
+                    <div className="p-4 m-2 border rounded-md shadow-sm hover:shadow-lg transition">
                     <h2 className="font-bold text-xl">{item.title}</h2>
                     <p className="mt-2">{item.description}</p>
                 </div>
