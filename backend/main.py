@@ -206,7 +206,7 @@ def get_incentives_data(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt)
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
         response = clean_up_json_response(response)
 
