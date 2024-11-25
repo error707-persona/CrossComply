@@ -140,9 +140,13 @@ const IncentiveAndGrants = () => {
                 ))}
             </div>
             <div className='flex items-center justify-center mt-5 w-fit'>
-                <Input type="number" onChange={(e) => setCurValue(e.target.value)} className='w-96 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' placeholder="Product Value" /> <Button className="ml-5" onClick={() => setProductValue(curValue)}>Calculate Cost</Button>
+                <Input type="number" onChange={(e) => {
+                    // @ts-expect-error
+                    setCurValue((e.target.value) * (1 - 0.008))
+                    
+                    }} className='w-96 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' placeholder="Product Value" /> <Button className="ml-5" onClick={() => setProductValue(curValue)}>Calculate Cost</Button>
             </div>
-            <Input type="text" className='w-96 mt-5' disabled placeholder={(curValue > 0) ? "Calculating cost..." : "Enter and click submit to start calculating.."} />
+            <Input type="text" className='w-96 mt-5' disabled placeholder={curValue} />
             <div className='mt-10 flex flex-col gap-5 w-28'>
                 <Button>Next</Button>
             </div>
