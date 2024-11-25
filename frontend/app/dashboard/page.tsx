@@ -1,5 +1,10 @@
 "use client";
-import { CircleUserRound, MoveLeft } from "lucide-react";
+import {
+  CircleUserRound,
+  Component,
+  MoveLeft,
+  TrendingUpIcon,
+} from "lucide-react";
 import React from "react";
 import {
   Table,
@@ -34,6 +39,29 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Cell,
+  Label as ChartLabel,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+} from "recharts";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+
 const applications = [
   {
     applicationId: "INV001",
@@ -95,12 +123,14 @@ const Dashboard = () => {
     // });
     // console.log(result)
   };
+
   const unsub = onSnapshot(collection(db, "applications"), (snapshot) => {
     snapshot.forEach((doc) => {
       const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
       console.log(source, " data: ", doc.data());
     });
   });
+
   return (
     <div>
       <div className="p-2 flex sticky top-0 w-full bg-blue-600 text-white font-bold text-2xl">
@@ -117,6 +147,12 @@ const Dashboard = () => {
         >
           <MoveLeft className="text-black" />
         </Button>
+
+        <div className="grid lg:grid-cols-2 gap-4 mt-4">
+          <RegionChart applications={applications} />
+          <StatusChart applications={applications} />
+        </div>
+
         <div className="grid grid-cols-4 gap-6">
           <div className="rounded-lg p-4 text-center">
             <h1 className="text-lg font-bold mb-2">Total Submissions</h1>
@@ -216,5 +252,237 @@ const Dashboard = () => {
     </div>
   );
 };
+
+export function RegionChart({
+  applications,
+}: {
+  applications: { paymentStatus: string; region: string }[];
+}) {
+  const COLORS = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+  ];
+
+  const regionCounts = React.useMemo(() => {
+    const counts: { [key: string]: number } = {};
+    applications.forEach((item) => {
+      counts[item.region] = (counts[item.region] || 0) + 1;
+    });
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  }, []);
+
+  const chartConfig = React.useMemo(() => {
+    return regionCounts.reduce(
+      (acc, { name }, index) => {
+        acc[name.toLowerCase()] = {
+          label: name,
+          color: COLORS[index % COLORS.length],
+        };
+        return acc;
+      },
+      {} as Record<string, { label: string; color: string }>,
+    );
+  }, [regionCounts]);
+
+  return (
+    <Card className="flex flex-col">
+      <CardHeader>
+        <CardTitle>Regional Applications Distribution</CardTitle>
+        <CardDescription>Number of applications by region</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={regionCounts}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                innerRadius={60}
+                strokeWidth={5}
+                dataKey="value"
+              >
+                <ChartLabel
+                  content={({ viewBox }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <text
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-foreground text-3xl font-bold"
+                          >
+                            {Object.values(
+                              regionCounts,
+                            ).length.toLocaleString()}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground"
+                          >
+                            Regions
+                          </tspan>
+                        </text>
+                      );
+                    }
+                  }}
+                />
+                {regionCounts.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <ChartTooltip content={<ChartTooltipContent />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+        <div className="mt-4 flex flex-wrap justify-center gap-4">
+          {regionCounts.map((entry, index) => (
+            <div key={`legend-${index}`} className="flex items-center">
+              <div
+                className="w-3 h-3 mr-2"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              ></div>
+              <span className="text-sm">
+                {entry.name}: {entry.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function StatusChart({
+  applications,
+}: {
+  applications: { paymentStatus: string; region: string }[];
+}) {
+  const COLORS = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+  ];
+
+  const statusCounts = React.useMemo(() => {
+    const counts = { Complete: 0, Pending: 0 };
+    applications.forEach((item) => {
+      counts[item.paymentStatus as keyof typeof counts]++;
+    });
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  }, []);
+
+  const chartConfig = React.useMemo(() => {
+    return statusCounts.reduce(
+      (acc, { name }, index) => {
+        acc[name.toLowerCase()] = {
+          label: name,
+          color: COLORS[index % COLORS.length],
+        };
+        return acc;
+      },
+      {} as Record<string, { label: string; color: string }>,
+    );
+  }, [statusCounts]);
+
+  return (
+    <Card className="flex flex-col">
+      <CardHeader>
+        <CardTitle>Application Status Distribution</CardTitle>
+        <CardDescription>Completed vs Pending Applications</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={statusCounts}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                innerRadius={60}
+                strokeWidth={5}
+                dataKey="value"
+              >
+                <ChartLabel
+                  content={({ viewBox }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <text
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-foreground text-3xl font-bold"
+                          >
+                            {Object.values(statusCounts)
+                              .reduce((prev, curr) => prev + curr.value, 0)
+                              .toLocaleString()}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground"
+                          >
+                            Applications
+                          </tspan>
+                        </text>
+                      );
+                    }
+                  }}
+                />
+                {statusCounts.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <ChartTooltip content={<ChartTooltipContent />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+        <div className="mt-4 flex flex-wrap justify-center gap-4">
+          {statusCounts.map((entry, index) => (
+            <div key={`legend-${index}`} className="flex items-center">
+              <div
+                className="w-3 h-3 mr-2"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              ></div>
+              <span className="text-sm">
+                {entry.name}: {entry.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default Dashboard;
