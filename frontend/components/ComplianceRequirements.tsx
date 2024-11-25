@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form"
 import { useResponse } from '@/store/response';
 import { doc, setDoc } from "firebase/firestore";
-import {db} from "../firebase" 
+import {db} from "../firebase"
 import { useCommonDataStore } from "@/store/CommonData";
 
 const FormSchema = z.object({
@@ -34,7 +34,7 @@ export default function ComplianceRequirements() {
     // console.log(selectList, "selected items");
     const [checkedItems, setCheckedItems] = useState([]);
     const {complianceData, selectList, setSelectList} = useCommonDataStore();
-  
+
     const form = useForm<z.infer<typeof FormSchema>>({
             resolver: zodResolver(FormSchema),
             defaultValues: {
@@ -45,7 +45,7 @@ export default function ComplianceRequirements() {
         const { region } = useRegion();
         const { product } = useProduct();
         const {compliance} = useResponse();
-        
+
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         console.log(data, "complaince data")
         await setDoc(doc(db, "cities", "LA"), {
@@ -64,82 +64,82 @@ export default function ComplianceRequirements() {
     }
 
     // Function to structure the response data
-// function structureComplianceData(responseText) {
-//     const lines = responseText.split('\n');  // Split the response into lines
-//     let structuredData = [];
-//     let currentSection = null;
-//     let currentItem = null;
-    
+function structureComplianceData(responseText) {
+    const lines = responseText.split('\n');  // Split the response into lines
+    let structuredData = [];
+    let currentSection = null;
+    let currentItem = null;
 
-//     // Loop through each line of the response text
-//     lines.forEach((line) => {
-//         line = line.trim();  // Trim leading and trailing spaces
 
-//         if (line.startsWith("**")) {
-//             // Section title (e.g., **Pre-Export Compliance Requirements**)
-//             if (currentSection) {
-//                 structuredData.push(currentSection);  // Push the previous section
-//             }
-//             currentSection = {
-//                 id: line.replace(/[^\w\s]/g, '').toLowerCase(), // Remove special chars and make it lowercase
-//                 label: line.replace(/[\*\*]/g, '').trim(), // Remove asterisks and trim
-//                 items: []
-//             };
-//         } else if (line.startsWith("1.") || line.startsWith("2.") || line.startsWith("3.")) {
-//             // Compliance points like "Check product classification"
-//             if (currentSection && currentItem) {
-//                 currentSection.items.push(currentItem);  // Add the current item to the section
-//             }
-//             currentItem = {
-//                 label: line.replace(/^\d+\./, '').trim(),  // Clean up the numbering and trim spaces
-//                 options: []  // Initialize an empty array for options
-//             };
-//         } else if (line.startsWith("*")) {
-//             // Options listed with a bullet point (e.g., HS Codes, flame retardants, etc.)
-//             if (currentItem) {
-//                 const optionText = line.replace(/^\*+/, '').trim();  // Clean up the leading '*' and trim
-//                 currentItem.options.push(optionText);
-//             }
-//         }
-//     });
+    // Loop through each line of the response text
+    lines.forEach((line) => {
+        line = line.trim();  // Trim leading and trailing spaces
 
-//     // Add the last section/item to the structured data
-//     if (currentItem && currentSection) {
-//         currentSection.items.push(currentItem);
-//     }
-//     if (currentSection) {
-//         structuredData.push(currentSection);
-//     }
-//     console.log(structuredData)
-//     return structuredData;
-// }
+        if (line.startsWith("**")) {
+            // Section title (e.g., **Pre-Export Compliance Requirements**)
+            if (currentSection) {
+                structuredData.push(currentSection);  // Push the previous section
+            }
+            currentSection = {
+                id: line.replace(/[^\w\s]/g, '').toLowerCase(), // Remove special chars and make it lowercase
+                label: line.replace(/[\*\*]/g, '').trim(), // Remove asterisks and trim
+                items: []
+            };
+        } else if (line.startsWith("1.") || line.startsWith("2.") || line.startsWith("3.")) {
+            // Compliance points like "Check product classification"
+            if (currentSection && currentItem) {
+                currentSection.items.push(currentItem);  // Add the current item to the section
+            }
+            currentItem = {
+                label: line.replace(/^\d+\./, '').trim(),  // Clean up the numbering and trim spaces
+                options: []  // Initialize an empty array for options
+            };
+        } else if (line.startsWith("*")) {
+            // Options listed with a bullet point (e.g., HS Codes, flame retardants, etc.)
+            if (currentItem) {
+                const optionText = line.replace(/^\*+/, '').trim();  // Clean up the leading '*' and trim
+                currentItem.options.push(optionText);
+            }
+        }
+    });
 
-    // const [complianceData, setComplianceData] = useState<any[]>([]);
+    // Add the last section/item to the structured data
+    if (currentItem && currentSection) {
+        currentSection.items.push(currentItem);
+    }
+    if (currentSection) {
+        structuredData.push(currentSection);
+    }
+    console.log(structuredData)
+    return structuredData;
+}
 
-    // useEffect(() => {
-    //     const fetchComplianceData = async () => {
+    const [complianceData, setComplianceData] = useState<any[]>([]);
 
-    //         try {
-    //             const response = await fetch('http://127.0.0.1:8000/get_compliance_data',{
-    //                 method:"POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body:JSON.stringify({ query:`Give me a checklist if i want to export ${product} in ${region}` }),
-    //             });
-    //             const data = await response.json();
-    //             // Structuring the response
-    //             const structuredComplianceData = structureComplianceData(data.complianceData);
-    //             // Log the structured data to see the result
-    //             console.log("Compliance Data:", structuredComplianceData);
-    //             setComplianceData(structuredComplianceData);
-    //         }catch (error) {
-    //             console.error("Error fetching compliance data:", error);
-    //         }
-    //     }
+    useEffect(() => {
+        const fetchComplianceData = async () => {
 
-    //     fetchComplianceData()
-    // }, [product, region]);
+            try {
+                const response = await fetch('http://127.0.0.1:8000/get_compliance_data',{
+                    method:"POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body:JSON.stringify({ query:`Give me a checklist if i want to export ${product} in ${region}` }),
+                });
+                const data = await response.json();
+                // Structuring the response
+                const structuredComplianceData = structureComplianceData(data.complianceData);
+                // Log the structured data to see the result
+                console.log("Compliance Data:", structuredComplianceData);
+                setComplianceData(structuredComplianceData);
+            }catch (error) {
+                console.error("Error fetching compliance data:", error);
+            }
+        }
+
+        fetchComplianceData()
+    }, [product, region]);
 
     return(
         <>
@@ -180,7 +180,7 @@ export default function ComplianceRequirements() {
                                                                 checked={value.includes(item.label)} // Check if item is in the value array
                                                                 onCheckedChange={(checked) => {
                                                                     // Update field value based on checkbox status
-                                                                    
+
                                                                     if (checked) {
                                                                         setCheckedItems((prev)=>[...prev, item.label])
                                                                         field.onChange([...value, item.label]);
@@ -211,7 +211,7 @@ export default function ComplianceRequirements() {
                                                                                             checked={subValue.includes(option)} // Dynamically check if option is selected
                                                                                             onCheckedChange={(checked) => {
                                                                                                 let updatedSubValue;
-                                                                                                
+
                                                                                                 if (checked) {
                                                                                                     // Add the option to the subValue array
                                                                                                     updatedSubValue = [...subValue, option];
@@ -255,7 +255,7 @@ export default function ComplianceRequirements() {
                         ))
                     ) : (
                         <Spinner><p>Loading compliance requirements...</p></Spinner>
-                        
+
                     )}
                     <FormMessage />
                 </FormItem>
