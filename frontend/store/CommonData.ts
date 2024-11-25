@@ -20,7 +20,7 @@ export const useCommonDataStore = create<CommonDataStore>()((set) => ({
   potentialCostSavings: null,
   estimatedCosts: null,
   complianceData: null,
-  selectList: null,
+  selectList: [],
 
   // Setters for each field
   setDutiesTariffs: (data) => set({ dutiesTariffs: data }),

@@ -114,7 +114,7 @@ const Dashboard = () => {
 
     <h1 className='font-bold m-4'>Selected Compliance Requirements</h1>
     <hr></hr>
-      {selectList}
+      {/* {selectList} */}
       {selectList?.length > 0 && (
         <ul style={{ listStyleType: 'disc' }}>
           {selectList?.map((list, index) => (

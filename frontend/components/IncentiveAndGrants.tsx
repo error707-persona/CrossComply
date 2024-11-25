@@ -48,7 +48,7 @@ const IncentiveAndGrants = () => {
                 });
                 const data = await response.json();
                 if (data) {
-                    let displayData = data.detail.split("\n");
+                    let displayData = data.detail.split("\n").splice(3);
                     console.log(displayData);
                 }
                 setIncentivesData(data);
