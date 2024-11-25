@@ -8,6 +8,41 @@ from faker import Faker
 mock = False
 fake = Faker()
 
+default_prompt = """
+### System:
+You are a respectful and honest assistant. You have to answer the user's
+questions using only the context provided to you. If you don't know the answer,
+please think rationally and answer from your own knowledge base.
+
+### Context:
+{context}
+
+### User:
+{question}
+
+### Response:
+"""
+
+json_prompt = lambda x="": """
+### System:
+You are a respectful and honest assistant. You have to answer the user's
+questions using only the context provided to you. If you don't know the answer,
+please think rationally and answer from your own knowledge base.
+Return the data only in json which can be directly parsed.
+
+{}
+
+If it is an error return it is `{error: {message:""}}`
+
+### Context:
+{context}
+
+### User:
+{question}
+
+### Response:
+""".format(x)
+
 # Define orchestrator (before app launch)
 llm_orchestrator = LLMOrchestrator(
     file_paths=[
@@ -23,20 +58,7 @@ llm_orchestrator = LLMOrchestrator(
     ],
     llm_model="llama3.2",
     embedding_model_path="sentence-transformers/all-mpnet-base-v2",
-    default_prompt="""
-    ### System:
-    You are a respectful and honest assistant. You have to answer the user's \
-    questions using only the context provided to you. If you don't know the answer, \
-    please think rationally and answer from your own knowledge base.
-
-    ### Context:
-    {context}
-
-    ### User:
-    {question}
-
-    ### Response:
-    """
+    default_prompt=default_prompt
 )
 
 # Explicitly initialize at runtime
@@ -68,12 +90,8 @@ def dutiesTariffs(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data only in json which can be directly parsed
-
-            If it is an error return it is `{error: {message:""}}`
-        """)
-        return {"response": response}
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -85,16 +103,12 @@ def potentialCostSavings(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data only in json which can be directly parsed
-            Respond strictly in JSON format. The response must be an array of objects. Each object must match one of these formats:
-
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt("""
             1. Success: `[{"costs": "value"}]`
-            2. Error: `[{"error": {"message": "value"}}]`
+            2. Error: `[{"error": {"message": "value"}}]`"
+        """))
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
-        return {"response": response}
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -106,12 +120,8 @@ def estimatedCosts(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data only in json which can be directly parsed
-
-            If it is an error return it is `{error: {message:""}}`
-        """)
-        return {"response": response}
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -145,14 +155,9 @@ def get_json(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what to be directly parsed.
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
-
-        # parsed_response = json.loads(response)
-        return {"response": response}
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -164,14 +169,9 @@ def get_compliance_data(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        compliance_data = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what to be directly parsed.
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
-
-        # parsed_compliance_data = json.loads(compliance_data)
-        return {"complianceData": compliance_data}
+        return {"complianceData": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -184,14 +184,9 @@ def get_incentives_data(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        incentives_data = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what to be directly parsed.
+        incentives_data = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt)
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
-
-        # parsed_incentives_data = json.loads(incentives_data)
-        return {"detail": incentives_data}
+        return {"detail": json.loads(incentives_data)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))

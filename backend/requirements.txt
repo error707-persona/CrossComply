@@ -1,5 +1,5 @@
 Faker==33.0.0
-fastapi==0.115.5
+fastapi[standard]==0.115.5
 langchain==0.3.7
 langchain_community==0.3.7
 langchain_core==0.3.19
