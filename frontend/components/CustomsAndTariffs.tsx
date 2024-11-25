@@ -1,97 +1,123 @@
-import { useEffect, useState } from "react"
-import { useProduct } from "@/store/product"
+import { useEffect, useState } from "react";
+import { useProduct } from "@/store/product";
 import { useRegion } from "@/store/region"; 
 import { Spinner } from "./ui/spinner";
 import { useCommonDataStore } from "@/store/CommonData";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const CustomsAndTariffs = () => {
-    // const [dutiesTariffs, setDutiesTariffs] = useState('')
-    // const [potentialCostSavings, setPotentialCostSavings] = useState('')
-    // const [estimatedCosts, setEstimatedCosts] = useState('')
-    const { region } = useRegion();
+  const { region } = useRegion();
+  const { product } = useProduct();
+  const { dutiesTariffs, potentialCostSavings, estimatedCosts } = useCommonDataStore();
 
-    const { product } = useProduct();
-
-    const { dutiesTariffs, potentialCostSavings, estimatedCosts } = useCommonDataStore();
-  
-
-    // useEffect(() => {
-    //     const fetchData = async() => {
-    //         const data = await fetch('http://127.0.0.1:8000/dutiesTariffs',
-    //             {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json', // Specify JSON format
-    //                 },
-    //                 body: JSON.stringify({ query: `What are duties and tariffs requirements for product ${product} and country ${region}`}),
-    //             }
-    //         ).then(res => res.json())
-    //         .then(val => setDutiesTariffs(val.response))
-    //         console.log("data", data)
-    //     }
-
-    //     fetchData()
-    // }, [product, region])
-
-    // useEffect(() => {
-    //     const fetchData = async() => {
-    //         const data = await fetch('http://127.0.0.1:8000/potentialCostSavings',
-    //             {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json', // Specify JSON format
-    //                 },
-    //                 body: JSON.stringify({ query: `What are potential cost savings for product ${product} and country ${region}`}),
-    //             }
-    //         ).then(res => res.json()).then(val => setPotentialCostSavings(val.response))
-    //         console.log("data", data)
-    //     }
-
-    //     fetchData()
-    // }, [product, region])
-
-    // useEffect(() => {
-    //     const fetchData = async() => {
-    //         const data = await fetch('http://127.0.0.1:8000/estimatedCosts',
-    //             {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json', // Specify JSON format
-    //                 },
-    //                 body: JSON.stringify({ query: `What are rates for product ${product} and country ${region}`}),
-    //             }
-    //         ).then(res => res.json()).then(val => setEstimatedCosts(val.response))
-    //         console.log("data", data)
-    //     }
-
-    //     fetchData()
-    // }, [product, region])
-    return (
-        <>
-            <div className='flex w-[100%]'>
-                <div className='flex flex-col border-2 m-4 w-[33%]'>
-                    <h1 className="p-2 font-bold">Breaked Down estimated customs duties and tariffs</h1>
-                    <div>
-                        {(dutiesTariffs!=='')?dutiesTariffs:<Spinner/>}
-                    </div>
-                </div>
-
-                <div className='flex flex-col border-2 m-4 w-[33%]'>
-                    <h1 className="p-2 font-bold">Suggested Potential Cost Saving Measures</h1>
-                    <div>
-                        {(potentialCostSavings!=='')?potentialCostSavings:<Spinner/>}
-                    </div>
-                </div>
-
-                <div className='flex flex-col border-2 m-4 w-[33%]'>
-                    <h1 className="p-2 font-bold">Estimated Costs</h1>
-                    <div>
-                        {(estimatedCosts)?estimatedCosts:<Spinner/>}
-                    </div>
-                </div>
+  return (
+    <div className="flex flex-wrap justify-between">
+      {/* Customs Duties and Tariffs */}
+      <div className="flex flex-col border-2 m-4 w-full sm:w-[48%] lg:w-[30%]">
+        <h1 className="p-2 font-bold">Breaked Down estimated customs duties and tariffs</h1>
+        <div>
+          {dutiesTariffs?.length > 0 ? (
+            // <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div>
+              {dutiesTariffs.map((item) => (
+                <Card key={item.hts8} className="hover:shadow-lg transition">
+                  <CardHeader>
+                    <CardTitle>{item.hts8}</CardTitle>
+                    <CardDescription>{item.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      <span className="font-semibold">Base Rate:</span> {item.base}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Category:</span> {item.category}
+                    </p>
+                    {item.safeguard && (
+                      <p>
+                        <span className="font-semibold">Safeguard:</span> {item.safeguard}
+                      </p>
+                    )}
+                  </CardContent>
+                  <CardFooter>
+                    <p className="text-sm text-gray-500">Details for HTS Code {item.hts8}</p>
+                  </CardFooter>
+                </Card>
+              ))}
             </div>
-        </>
-    )
-}
+          ) : (
+            <Spinner />
+          )}
+        </div>
+      </div>
 
-export default CustomsAndTariffs
+      {/* Suggested Potential Cost Saving Measures */}
+      <div className="flex flex-col border-2 m-4 w-full sm:w-[48%] lg:w-[30%]">
+        <h1 className="p-2 font-bold">Suggested Potential Cost Saving Measures</h1>
+        <div>
+          {potentialCostSavings?.length > 0
+            ? (
+                <div className="">
+                {potentialCostSavings?.map((item) => (
+                    <div className="p-4 border rounded-md shadow-sm hover:shadow-lg transition">
+                    <h2 className="font-bold text-xl">{item.title}</h2>
+                    <p className="mt-2">{item.description}</p>
+                </div>
+      ))}
+    </div>
+            )
+            : <Spinner />}
+        </div>
+      </div>
+
+      {/* Estimated Costs Table */}
+      <div className="flex flex-col border-2 m-4 w-full sm:w-[48%] lg:w-[30%]">
+        <h1 className="p-2 font-bold">Estimated Costs</h1>
+        <div>
+          {estimatedCosts ? (
+            <div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Code</TableHead>
+                    <TableHead className="text-left">Rate</TableHead>
+                    <TableHead className="text-left">Category</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {estimatedCosts.map((item) => (
+                    <TableRow key={item.code}>
+                      <TableCell className="font-medium">{item.code}</TableCell>
+                      <TableCell>{item.rate}</TableCell>
+                      <TableCell>{item.category}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <Spinner />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CustomsAndTariffs;
