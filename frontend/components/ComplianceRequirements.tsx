@@ -59,93 +59,33 @@ export default function ComplianceRequirements() {
     }
 
     // Function to structure the response data
-function structureComplianceData(responseText:string) {
-    console.log(responseText)
-    type currentSectionType = {
-        id: string,
-        label: string,
-        items: any[]
-      };
-      type currentItemType = {
-        label: string,
-        options: string[]
-      };
-    const lines = responseText.split('\n');  // Split the response into lines
-    let structuredData:currentSectionType[] = [];
-    let currentSection:currentSectionType|null=null;
-    let currentItem:currentItemType|null=null;
-
-
-    // Loop through each line of the response text
-    lines.forEach((line) => {
-        line = line.trim();  // Trim leading and trailing spaces
-
-        if (line.startsWith("**")) {
-            // Section title (e.g., **Pre-Export Compliance Requirements**)
-            if (currentSection) {
-                structuredData.push(currentSection);  // Push the previous section
-            }
-            currentSection = {
-                id: line.replace(/[^\w\s]/g, '').toLowerCase(), // Remove special chars and make it lowercase
-                label: line.replace(/[\*\*]/g, '').trim(), // Remove asterisks and trim
-                items: []
-            };
-        } else if (line.startsWith("1.") || line.startsWith("2.") || line.startsWith("3.")) {
-            // Compliance points like "Check product classification"
-            if (currentSection && currentItem) {
-                currentSection.items.push(currentItem);  // Add the current item to the section
-            }
-            currentItem = {
-                label: line.replace(/^\d+\./, '').trim(),  // Clean up the numbering and trim spaces
-                options: []  // Initialize an empty array for options
-            };
-        } else if (line.startsWith("*")) {
-            // Options listed with a bullet point (e.g., HS Codes, flame retardants, etc.)
-            if (currentItem) {
-                const optionText = line.replace(/^\*+/, '').trim();  // Clean up the leading '*' and trim
-                currentItem.options.push(optionText);
-            }
-        }
-    });
-
-    // Add the last section/item to the structured data
-    if (currentItem && currentSection) {
-         // @ts-expect-error
-        currentSection.items.push(currentItem);
-    }
-    if (currentSection) {
-        structuredData.push(currentSection);
-    }
-    console.log(structuredData)
-    return structuredData;
-}
 
     // const [complianceData, setComplianceData] = useState<any[]>([]);
 
-    useEffect(() => {
-        const fetchComplianceData = async () => {
+    // useEffect(() => {
+    //     const fetchComplianceData = async () => {
 
-            try {
-                const response = await fetch('http://127.0.0.1:8000/get_compliance_data',{
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body:JSON.stringify({ query:`Give me a checklist if i want to export ${product} in ${region}` }),
-                });
-                const data = await response.json();
-                // Structuring the response
-                const structuredComplianceData = structureComplianceData(data.complianceData);
-                // Log the structured data to see the result
-                console.log("Compliance Data:", structuredComplianceData);
-                setComplianceData(structuredComplianceData);
-            }catch (error) {
-                console.error("Error fetching compliance data:", error);
-            }
-        }
+    //         try {
+    //             const response = await fetch('http://127.0.0.1:8000/get_compliance_data',{
+    //                 method:"POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body:JSON.stringify({ query:`Give me a checklist if i want to export ${product} in ${region}` }),
+    //             });
+    //             const data = await response.json();
+    //             // Structuring the response
 
-        fetchComplianceData()
-    }, [product, region]);
+    //             // Log the structured data to see the result
+    //             console.log("Compliance Data:", data);
+    //             setComplianceData(complianceDataTest);
+    //         }catch (error) {
+    //             console.error("Error fetching compliance data:", error);
+    //         }
+    //     }
+
+    //     fetchComplianceData()
+    // }, [product, region, setComplianceData]);
 
     return(
         <>

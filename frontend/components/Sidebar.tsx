@@ -36,7 +36,7 @@ const { setDutiesTariffs, dutiesTariffs, selectList, setComplianceData, complian
     let structuredData:currentSectionType[] = [];
     let currentSection:currentSectionType|null=null;
     let currentItem:currentItemType|null=null;
-    
+
 
     // Loop through each line of the response text
     lines.forEach((line) => {
@@ -252,27 +252,93 @@ const { setDutiesTariffs, dutiesTariffs, selectList, setComplianceData, complian
             ]
         }
           setDutiesTariffs(data?.results)
-        
+
         console.log("data", data)
     }
     const fetchComplianceData = async () => {
-    try {
-        const response = await fetch('http://127.0.0.1:8000/get_compliance_data',{
-            method:"POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body:JSON.stringify({ query:`Give me a checklist if i want to export ${product} in ${region}` }),
-        });
-        const data = await response.json();
-        // Structuring the response
-        const structuredComplianceData = structureComplianceData(data.complianceData);
-        // Log the structured data to see the result
-        console.log("Compliance Data:", structuredComplianceData);
-        setComplianceData(structuredComplianceData);
-    } catch (error) {
-        console.error("Error fetching compliance data:", error);
-    }
+    // try {
+    //     const response = await fetch('http://127.0.0.1:8000/get_compliance_data',{
+    //         method:"POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body:JSON.stringify({ query:`Give me a checklist if i want to export ${product} in ${region}` }),
+    //     });
+    //     const data = await response.json();
+    //     // Structuring the response
+    //     const structuredComplianceData = structureComplianceData(data.complianceData);
+    //     // Log the structured data to see the result
+    //     console.log("Compliance Data:", structuredComplianceData);
+    //     setComplianceData(structuredComplianceData);
+    // } catch (error) {
+    //     console.error("Error fetching compliance data:", error);
+    // }
+    const complianceDataTest = [
+        {
+            "id": "preexport compliance requirements",
+            "label": "Pre-Export Compliance Requirements:",
+            "items": [
+                {
+                    "label": "**Check product classification**: Ensure that your furniture falls under one of the following categories and complies with the relevant regulations:",
+                    "options": [
+                        "4414: Wooden frames for paintings, photographs, mirrors or similar objects",
+                        "4415: Packing cases, boxes, crates, drums and similar packings, of wood; cable-drums of wood; pallets, box pallets and other load boards, of wood; pallet collars of wood",
+                        "4416: Casks, barrels, vats, tubs and other coopers' products and parts thereof, of wood, including staves",
+                        "4417: Tools, tool bodies, tool handles, broom or brush bodies and handles, of wood; boot or shoe lasts and trees, of wood",
+                        "4418: Builders' joinery and carpentry of wood, including cellular wood panels, assembled flooring panels, Shingles and shakes",
+                        "4419: Tableware and kitchenware, of wood"
+                    ]
+                },
+                {
+                    "label": "**Check for antimicrobial textile or pesticide-related characteristics**: If your furniture contains any such features, it must be registered with the Environmental Protection Agency (EPA).",
+                    "options": []
+                }
+            ]
+        },
+        {
+            "id": "export documentation requirements",
+            "label": "Export Documentation Requirements:",
+            "items": [
+                {
+                    "label": "**Comply with TSCA Title VI formaldehyde emission limits**: Manufacturers are required to conduct testing through a CPSCA affiliated lab and obtain a certificate from the Importer on Record.",
+                    "options": []
+                },
+                {
+                    "label": "**Declare product composition**: Provide a declaration to the exporter stating that the product complies with all relevant regulations.",
+                    "options": []
+                },
+                {
+                    "label": "**Provide certification**: Obtain a certificate from the manufacturer or importer confirming compliance with TSCA Title VI formaldehyde emission limits.",
+                    "options": []
+                }
+            ]
+        },
+        {
+            "id": "additional requirements",
+            "label": "Additional Requirements:",
+            "items": [
+                {
+                    "label": "**Verify declarations**: The proper officer of customs may cause a verification of export declarations in case of doubt or conflicting information.",
+                    "options": []
+                },
+                {
+                    "label": "**Check for hazardous substances labeling**: Ensure that your furniture meets the definition of hazardous under the Federal Hazardous Substances Act (FHSA) and bears a cautionary labeling.",
+                    "options": []
+                }
+            ]
+        },
+        {
+            "id": "disclaimer",
+            "label": "Disclaimer:",
+            "items": [
+                {
+                    "label": "**Comply with EPA regulations**: Register your product with the EPA if it contains antimicrobial textile or pesticide-related characteristics.",
+                    "options": []
+                }
+            ]
+        }
+    ]
+    setComplianceData(complianceDataTest);
     }
     const fetchPotentialCostSavingsData = async() => {
     // const data = await fetch('http://127.0.0.1:8000/potentialCostSavings',
@@ -570,7 +636,7 @@ const { setDutiesTariffs, dutiesTariffs, selectList, setComplianceData, complian
         fetchPotentialCostSavingsData();
         fetchEstimatedCostsData();
         }
-        
+
     }
     const shouldClick = () => {
         if(selectList?.length) {
