@@ -65,7 +65,8 @@ llm_orchestrator = LLMOrchestrator(
         "../notebooks/docs/Tariff4.pdf",
         "../notebooks/docs/weekly_currency_notice_11-22-2024.pdf",
         "../notebooks/docs/Tariff1.pdf",
-        "../notebooks/docs/CustomsAndTariffs.pdf"
+        "../notebooks/docs/CustomsAndTariffs.pdf",
+        "../notebooks/docs/RoSCTL.pdf",
     ],
     llm_model="gemini-1.5-flash",
     embedding_model_path="sentence-transformers/all-mpnet-base-v2",
@@ -75,7 +76,7 @@ llm_orchestrator = LLMOrchestrator(
 # Explicitly initialize at runtime
 if not mock:
     try:
-        llm_orchestrator.initialize(build_vector_store=False)
+        llm_orchestrator.initialize(build_vector_store=True)
     except Exception as e:
         raise RuntimeError(f"Failed to initialize QA system: {e}")
 
@@ -206,7 +207,10 @@ def get_incentives_data(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt)
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt("""
+            1. Success: `[{{"item": "value"}}]`
+            2. Error: `[{{"error": {{"message": "value"}}}}]`"
+        """))
 
         response = clean_up_json_response(response)
 
