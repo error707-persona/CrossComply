@@ -8,6 +8,52 @@ from faker import Faker
 mock = False
 fake = Faker()
 
+default_prompt = """
+### System:
+You are a respectful and honest assistant. You have to answer the user's
+questions using only the context provided to you. If you don't know the answer,
+please think rationally and answer from your own knowledge base.
+
+### Context:
+{context}
+
+### User:
+{question}
+
+### Response:
+"""
+
+json_prompt = lambda x="": """
+### System:
+Return the data only in json which can be directly parsed, don't return in a formatted way.
+Because the output will be put into json.loads function in python.
+
+You are a respectful and honest assistant. You have to answer the user's
+questions using only the context provided to you. If you don't know the answer,
+please think rationally and answer from your own knowledge base.
+
+
+""" + x + """ 
+
+If it is an error return it as `{{"error": {{"message":""}}}}`
+
+### Context:
+{context}
+
+### User:
+{question}
+
+### Response:
+"""
+
+# Clean up the response to remove code block delimiters
+def clean_up_json_response(response):
+    if response.startswith("```"):
+        response = response.replace("```","")
+        response = response.replace(r"\n","")
+        response = response[4:].strip()
+    return response
+
 # Define orchestrator (before app launch)
 llm_orchestrator = LLMOrchestrator(
     file_paths=[
@@ -21,28 +67,15 @@ llm_orchestrator = LLMOrchestrator(
         "../notebooks/docs/Tariff1.pdf",
         "../notebooks/docs/CustomsAndTariffs.pdf"
     ],
-    llm_model="llama3.2",
+    llm_model="gemini-1.5-flash",
     embedding_model_path="sentence-transformers/all-mpnet-base-v2",
-    default_prompt="""
-    ### System:
-    You are a respectful and honest assistant. You have to answer the user's \
-    questions using only the context provided to you. If you don't know the answer, \
-    please think rationally and answer from your own knowledge base.
-
-    ### Context:
-    {context}
-
-    ### User:
-    {question}
-
-    ### Response:
-    """
+    default_prompt=default_prompt
 )
 
 # Explicitly initialize at runtime
 if not mock:
     try:
-        llm_orchestrator.initialize()
+        llm_orchestrator.initialize(build_vector_store=False)
     except Exception as e:
         raise RuntimeError(f"Failed to initialize QA system: {e}")
 
@@ -68,12 +101,11 @@ def dutiesTariffs(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data only in json which can be directly parsed
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
-        return {"response": response}
+        response = clean_up_json_response(response)
+
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -85,16 +117,14 @@ def potentialCostSavings(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data only in json which can be directly parsed
-            Respond strictly in JSON format. The response must be an array of objects. Each object must match one of these formats:
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt("""
+            1. Success: `[{{"costs": "value"}}]`
+            2. Error: `[{{"error": {{"message": "value"}}}}]`"
+        """))
 
-            1. Success: `[{"costs": "value"}]`
-            2. Error: `[{"error": {"message": "value"}}]`
+        response = clean_up_json_response(response)
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
-        return {"response": response}
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -106,12 +136,11 @@ def estimatedCosts(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data only in json which can be directly parsed
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
-        return {"response": response}
+        response = clean_up_json_response(response)
+
+        return {"response": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -145,17 +174,13 @@ def get_json(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        response = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what to be directly parsed.
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
+        response = clean_up_json_response(response)
 
-        # parsed_response = json.loads(response)
-        return {"response": response}
+        return {"response": json.loads(response)}
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=e)
 
 @app.post("/get_compliance_data")
 def get_compliance_data(request: ModelQuery):
@@ -164,14 +189,11 @@ def get_compliance_data(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        compliance_data = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what to be directly parsed.
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
+        response = clean_up_json_response(response)
 
-        # parsed_compliance_data = json.loads(compliance_data)
-        return {"complianceData": compliance_data}
+        return {"complianceData": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -184,14 +206,11 @@ def get_incentives_data(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        incentives_data = llm_orchestrator.get_response(request.query, system="""
-            Return the data in json format no matter what to be directly parsed.
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt)
 
-            If it is an error return it is `{error: {message:""}}`
-        """)
+        response = clean_up_json_response(response)
 
-        # parsed_incentives_data = json.loads(incentives_data)
-        return {"detail": incentives_data}
+        return {"detail": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
