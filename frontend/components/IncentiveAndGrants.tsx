@@ -140,7 +140,7 @@ const IncentiveAndGrants = () => {
                 ))}
             </div>
             <div className='flex items-center justify-center mt-5 w-fit'>
-                <Input type="number" onChange={(e) => {
+                <Input type="number" maxLength={10} onChange={(e) => {
                     // @ts-expect-error
                     setCurValue((e.target.value) * (1 - 0.008))
                     

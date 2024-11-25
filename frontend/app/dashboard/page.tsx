@@ -17,6 +17,17 @@ import { addDoc, collection, doc, onSnapshot, setDoc } from "firebase/firestore"
 import {db} from "../../firebase"
 import { useRegion } from '@/store/region'
 import { useProduct } from '@/store/product'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 const applications = [
   {
     applicationId: "INV001",
@@ -87,14 +98,14 @@ const Dashboard = () => {
   });
   return (
     <div>
-      <div className="p-2 flex fixed bg-blue-600 text-white font-bold text-2xl">
+      {/* <div className="flex fixed bg-blue-600 text-white w-full font-bold text-2xl">
         <span>CrossComply</span>
         <div className="mr-5 ml-auto">
           <CircleUserRound />
         </div>
-      </div>
+      </div> */}
       <div className='flex flex-col mt-2 px-24'>
-        <Button onClick={handleSubmit}>submit</Button>
+        {/* <Button onClick={handleSubmit}>submit</Button> */}
         <Button className='w-6 border-none bg-transparent hover:bg-transparent' onClick={()=>router.push('/')}><MoveLeft className='text-black'/></Button>
         <div className="grid grid-cols-4 gap-6">
           <div className="rounded-lg p-4 text-center">
@@ -132,7 +143,27 @@ const Dashboard = () => {
             <TableCell className={(invoice.paymentStatus==='Complete')?'text-green-500':'text-red-600'}>{invoice.paymentStatus}</TableCell>
             <TableCell>{invoice.product}</TableCell>
             <TableCell className="text-right">{invoice.region}</TableCell>
-            <TableCell className="text-right"><Button className='hover:bg-gray-400' onClick={()=>router.push('/pdfReview')}>Check Uploads</Button></TableCell>
+            <TableCell className="text-right"> <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Check Uploads</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Documents Uploaded</DialogTitle>
+          <DialogDescription>
+            Check/Change your uploads
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex">
+          <div className='border border-black p-5 w-2/3 rounded'></div>
+          <Button className='hover:bg-gray-400 ml-auto' onClick={()=>router.push('/pdfReview')}>Check</Button>
+        </div>
+        <DialogFooter>
+          <Button type="submit">Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </TableCell>
           </TableRow>
         ))}
       </TableBody>

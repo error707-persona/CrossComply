@@ -14,7 +14,7 @@ export default function Home() {
         </div>
       </div>
       <div className="flex mt-10 flex-col md:flex-row gap-16 h-full">
-        <div className=" flex items-center w-1/5">
+        <div className="flex fixed items-center w-1/5 h-full">
           <Sidebar />
         </div>
         <MainArea />

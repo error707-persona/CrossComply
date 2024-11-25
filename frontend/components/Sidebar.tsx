@@ -161,11 +161,11 @@ const { setDutiesTariffs, dutiesTariffs, selectList, setComplianceData, complian
         return true
     }
     return (
-        <div className='p-5 gap-5 flex flex-col h-full'>
+        <div className='p-3 mt-5 w-full gap-5 flex flex-col h-full'>
             <ComboBox title='Product' items={productItems}/>
             <ComboBox title='Region' items={countryNames}/>
-            <Button className='mt-auto' disabled={checkSubmit()} onClick={handleSubmit}>Submit</Button>
-            <Button disabled={shouldClick()} className='mt-auto' onClick={() => router.push('/dashboard')}>Dashboard</Button>
+            <Button className='' onClick={() => router.push('/dashboard')}>Dashboard</Button>
+            <Button disabled={checkSubmit()} onClick={handleSubmit}>Submit</Button>
         </div>
     )
 }

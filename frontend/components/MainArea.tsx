@@ -8,7 +8,7 @@ import ExportDocumentation from './ExportDocumentation'
 
 const MainArea = () => {
     return (
-        <div className='w-full h-full mt-5'>
+        <div className='w-3/4 h-full mt-5 ml-auto'>
             <Tabs defaultValue="account" className="w-full">
                 <TabsList>
                     <TabsTrigger value="compliance">Compliance Requirements</TabsTrigger>
