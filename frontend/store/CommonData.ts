@@ -5,10 +5,10 @@ export type CommonDataStore = {
   dutiesTariffs: string | null;
   potentialCostSavings: string | null;
   estimatedCosts: string | null;
-  complianceData: string | null;
-  selectList: string[] | null;
+  complianceData: any[];
+  selectList: string[];
   setDutiesTariffs: (data: string) => void;
-  setComplianceData: (data: string) => void;
+  setComplianceData: (data: any[]) => void;
   setPotentialCostSavings: (data: string) => void;
   setEstimatedCosts: (data: string) => void;
   setSelectList: (data: string[]) => void;
@@ -19,7 +19,7 @@ export const useCommonDataStore = create<CommonDataStore>()((set) => ({
   dutiesTariffs: null,
   potentialCostSavings: null,
   estimatedCosts: null,
-  complianceData: null,
+  complianceData: [],
   selectList: [],
 
   // Setters for each field

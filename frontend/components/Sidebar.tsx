@@ -22,11 +22,20 @@ const { setDutiesTariffs, dutiesTariffs, selectList, setComplianceData, complian
   const {compliance} = useResponse();
   const productStore = useProduct();
 
-  const structureComplianceData = (responseText) => {
+  const structureComplianceData = (responseText:string) => {
+    type currentSectionType = {
+        id: string,
+        label: string,
+        items: any[]
+      };
+      type currentItemType = {
+        label: string,
+        options: string[]
+      };
     const lines = responseText.split('\n');  // Split the response into lines
-    let structuredData = [];
-    let currentSection = null;
-    let currentItem = null;
+    let structuredData:currentSectionType[] = [];
+    let currentSection:currentSectionType|null=null;
+    let currentItem:currentItemType|null=null;
     
 
     // Loop through each line of the response text
@@ -63,6 +72,7 @@ const { setDutiesTariffs, dutiesTariffs, selectList, setComplianceData, complian
 
     // Add the last section/item to the structured data
     if (currentItem && currentSection) {
+        // @ts-expect-error
         currentSection.items.push(currentItem);
     }
     if (currentSection) {
