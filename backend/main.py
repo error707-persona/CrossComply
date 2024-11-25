@@ -25,14 +25,17 @@ please think rationally and answer from your own knowledge base.
 
 json_prompt = lambda x="": """
 ### System:
+Return the data only in json which can be directly parsed, don't return in a formatted way.
+Because the output will be put into json.loads function in python.
+
 You are a respectful and honest assistant. You have to answer the user's
 questions using only the context provided to you. If you don't know the answer,
 please think rationally and answer from your own knowledge base.
-Return the data only in json which can be directly parsed.
 
-{}
 
-If it is an error return it is `{error: {message:""}}`
+""" + x + """ 
+
+If it is an error return it as `{{"error": {{"message":""}}}}`
 
 ### Context:
 {context}
@@ -41,7 +44,15 @@ If it is an error return it is `{error: {message:""}}`
 {question}
 
 ### Response:
-""".format(x)
+"""
+
+# Clean up the response to remove code block delimiters
+def clean_up_json_response(response):
+    if response.startswith("```"):
+        response = response.replace("```","")
+        response = response.replace(r"\n","")
+        response = response[4:].strip()
+    return response
 
 # Define orchestrator (before app launch)
 llm_orchestrator = LLMOrchestrator(
@@ -56,7 +67,7 @@ llm_orchestrator = LLMOrchestrator(
         "../notebooks/docs/Tariff1.pdf",
         "../notebooks/docs/CustomsAndTariffs.pdf"
     ],
-    llm_model="llama3.2",
+    llm_model="gemini-1.5-flash",
     embedding_model_path="sentence-transformers/all-mpnet-base-v2",
     default_prompt=default_prompt
 )
@@ -64,7 +75,7 @@ llm_orchestrator = LLMOrchestrator(
 # Explicitly initialize at runtime
 if not mock:
     try:
-        llm_orchestrator.initialize()
+        llm_orchestrator.initialize(build_vector_store=False)
     except Exception as e:
         raise RuntimeError(f"Failed to initialize QA system: {e}")
 
@@ -91,6 +102,9 @@ def dutiesTariffs(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
+
+        response = clean_up_json_response(response)
+
         return {"response": json.loads(response)}
     except Exception as e:
         print(e)
@@ -104,9 +118,11 @@ def potentialCostSavings(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt("""
-            1. Success: `[{"costs": "value"}]`
-            2. Error: `[{"error": {"message": "value"}}]`"
+            1. Success: `[{{"costs": "value"}}]`
+            2. Error: `[{{"error": {{"message": "value"}}}}]`"
         """))
+
+        response = clean_up_json_response(response)
 
         return {"response": json.loads(response)}
     except Exception as e:
@@ -121,6 +137,9 @@ def estimatedCosts(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
+
+        response = clean_up_json_response(response)
+
         return {"response": json.loads(response)}
     except Exception as e:
         print(e)
@@ -157,10 +176,11 @@ def get_json(request: ModelQuery):
     try:
         response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
 
+        response = clean_up_json_response(response)
+
         return {"response": json.loads(response)}
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=e)
 
 @app.post("/get_compliance_data")
 def get_compliance_data(request: ModelQuery):
@@ -170,6 +190,8 @@ def get_compliance_data(request: ModelQuery):
 
     try:
         response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt())
+
+        response = clean_up_json_response(response)
 
         return {"complianceData": json.loads(response)}
     except Exception as e:
@@ -184,9 +206,11 @@ def get_incentives_data(request: ModelQuery):
         return {"response": fake.text()}
 
     try:
-        incentives_data = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt)
+        response = llm_orchestrator.get_response_with_custom_prompt(request.query, json_prompt)
 
-        return {"detail": json.loads(incentives_data)}
+        response = clean_up_json_response(response)
+
+        return {"detail": json.loads(response)}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
