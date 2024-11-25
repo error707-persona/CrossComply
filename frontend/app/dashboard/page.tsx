@@ -253,7 +253,7 @@ const Dashboard = () => {
   );
 };
 
-export function RegionChart({
+function RegionChart({
   applications,
 }: {
   applications: { paymentStatus: string; region: string }[];
@@ -369,7 +369,7 @@ export function RegionChart({
   );
 }
 
-export function StatusChart({
+function StatusChart({
   applications,
 }: {
   applications: { paymentStatus: string; region: string }[];
